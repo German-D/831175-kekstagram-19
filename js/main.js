@@ -55,7 +55,7 @@ function getArray(a, b) {
   }
   var r = [];
   for (var n = a; n <= b; n++) {
-    r.push(i);
+    r.push(n);
   }
   return r;
 }
@@ -69,16 +69,16 @@ function getRandomIntInclusive(min, max) {
 
 // Функция поиска случайного элемента в массиве
 function getRandomElement(array) {
-  var getRandomElementOrder = getRandomIntInclusive(0, array.length);
+  var maxArrayElement = array.length - 1;
+  var getRandomElementOrder = getRandomIntInclusive(0, maxArrayElement);
   return array[getRandomElementOrder];
 }
 
 // Функция для создания описания
 function addNewMessage(messageList) {
-  var random2; // Случайное число от 1 до 2 включительно
   var newMessage;
-  random2 = getRandomIntInclusive(1, 2);
-  if (random2 === 1) {
+  var tmp = getRandomIntInclusive(1, 2); // Случайное число от 1 до 2 включительно
+  if (tmp === 1) {
     newMessage = messageList[getRandomIntInclusive(0, 6)];
   } else {
     newMessage = messageList[getRandomIntInclusive(0, 6)] + messageList[getRandomIntInclusive(0, 6)];
@@ -89,14 +89,13 @@ function addNewMessage(messageList) {
 // Функция для создания комментария
 function addNewComment(messagesArray, namesArray) {
   var comments = [];
-  var random10 = getRandomIntInclusive(1, 10); // Случайное число от 1 до 10 включительно
-  var random6; // Случайное число от 1 до 6 включительно
-  for (i = 0; i < random10; i++) {
-    random6 = getRandomIntInclusive(1, 6);
+  var quantityComments = getRandomIntInclusive(1, 10); // Случайное число от 1 до 10 включительно
+  for (i = 0; i < quantityComments; i++) {
+    var tmp = getRandomIntInclusive(1, 6); // Случайное число от 1 до 6 включительно
     comments.push({
-      avatar: 'img/avatar-' + random6 + '.svg',
+      avatar: 'img/avatar-' + tmp + '.svg',
       message: addNewMessage(messagesArray),
-      name: namesArray[getRandomIntInclusive(0, 24)]
+      name: namesArray[getRandomIntInclusive(0, names.length)]
     });
   }
   return comments;
@@ -105,20 +104,18 @@ function addNewComment(messagesArray, namesArray) {
 // Функция для создания новой фотографии
 function addNewPhoto(namesArray, messagesArray, descriptionsArray) {
   var photos = [];
-  var random25; // Случайное число от 1 до 25 включительно
   var newArray = getArray(1, 25); // Создаю новый массив от 1 до 25
 
   for (var k = 1; k < 25; k++) {
-    random25 = getRandomElement(newArray); // Присваиваю random25 случайное значение из массива
-
-    var random25Position = newArray.indexOf(random25); // Вычиляю позицию random25 в массиве newArray
-    newArray.splice(random25Position, 1); // Удаляю позицию random25 в массиве newArray
+    var tmp = getRandomElement(newArray); // Присваиваю tmp случайное значение из массива от 1 до 25
+    var tmpPosition = newArray.indexOf(tmp); // Вычиляю позицию tmp в массиве newArray
+    newArray.splice(tmpPosition, 1); // Удаляю позицию tmp в массиве newArray
 
     photos.push({
-      url: 'photos/' + random25 + '.jpg',
-      description: descriptionsArray[getRandomIntInclusive(0, 6)],
+      url: 'photos/' + tmp + '.jpg',
+      description: descriptionsArray[getRandomElement(descriptionsArray)],
       likes: getRandomIntInclusive(15, 200),
-      comments: addNewComment(messages, names)
+      comments: addNewComment(messagesArray, namesArray)
     });
   }
   return photos;
@@ -127,15 +124,15 @@ function addNewPhoto(namesArray, messagesArray, descriptionsArray) {
 var photosArray = addNewPhoto(names, messages, descriptions);
 
 
-var photoTemplate = document.querySelector('#picture');
+var photoTemplate = document.querySelector('#picture').content;
 var photoList = document.querySelector('.pictures');
 
-function renderPhoto(photosList) {
+function renderPhoto(photosElement) {
   var photoElement = photoTemplate.cloneNode(true);
 
-  photoElement.querySelector('.picture__img').src = photosList.url;
-  photoElement.querySelector('.picture__likes').textContent = photosList.likes;
-  photoElement.querySelector('.picture__comments').textContent = photosList.comments.length;
+  photoElement.querySelector('.picture__img').src = photosElement.url;
+  photoElement.querySelector('.picture__likes').textContent = photosElement.likes;
+  photoElement.querySelector('.picture__comments').textContent = photosElement.comments.length;
 
   return photoElement;
 }
