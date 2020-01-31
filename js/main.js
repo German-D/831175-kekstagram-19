@@ -71,7 +71,7 @@ function getRandomIntInclusive(min, max) {
 function getRandomElement(array) {
   var maxArrayElement = array.length - 1;
   var getRandomElementOrder = getRandomIntInclusive(0, maxArrayElement);
-  return array[getRandomElementOrder];
+  return [array[getRandomElementOrder], getRandomElementOrder];
 }
 
 // Функция для создания описания
@@ -107,13 +107,14 @@ function addNewPhoto(namesArray, messagesArray, descriptionsArray) {
   var newArray = getArray(1, 25); // Создаю новый массив от 1 до 25
 
   for (var k = 1; k < 25; k++) {
-    var tmp = getRandomElement(newArray); // Присваиваю tmp случайное значение из массива от 1 до 25
-    var tmpPosition = newArray.indexOf(tmp); // Вычиляю позицию tmp в массиве newArray
-    newArray.splice(tmpPosition, 1); // Удаляю позицию tmp в массиве newArray
+    var tmp = getRandomElement(newArray); // Присваиваю tmp массив со случайным значение из массива от 1 до 25 и порядком элемента
+    var descriptionArrayRandomElement = getRandomElement(descriptionsArray);
+    newArray.splice(tmp[1], 1); // Удаляю позицию tmp в массиве newArray
+
 
     photos.push({
-      url: 'photos/' + tmp + '.jpg',
-      description: descriptionsArray[getRandomElement(descriptionsArray)],
+      url: 'photos/' + tmp[0] + '.jpg',
+      description: descriptionArrayRandomElement[0],
       likes: getRandomIntInclusive(15, 200),
       comments: addNewComment(messagesArray, namesArray)
     });
