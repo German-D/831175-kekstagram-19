@@ -90,13 +90,14 @@ function addNewComment(messagesArray, namesArray) {
 
 // Функция для создания новой фотографии
 function addNewPhoto(namesArray, messagesArray, descriptionsArray) {
+  var photosCount = 25;
   var photos = [];
   var newArray = []; // Создаю новый массив от 1 до 25
-  for (var n = 1; n < 25; n++) {
+  for (var n = 1; n <= photosCount; n++) {
     newArray.push(n);
   }
 
-  for (var k = 1; k < 25; k++) {
+  for (var k = 0; k < photosCount; k++) {
     var randomArrayPosition = getRandomIntInclusive(0, newArray.length - 1);
     var tmpArray = newArray.splice(randomArrayPosition, 1); // уменьшаю массив newArray
     var descriptionArrayRandomElement = getRandomElement(descriptionsArray);
