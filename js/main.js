@@ -48,18 +48,6 @@ var messages = [
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
 ];
 
-// Функция для генерации массива вида 1,2…100
-function getArray(a, b) {
-  if (a >= b) {
-    return [];
-  }
-  var r = [];
-  for (var n = a; n <= b; n++) {
-    r.push(n);
-  }
-  return r;
-}
-
 // Функция получения случайного целого числа в заданном интервале. Максимум и минимум включаются
 function getRandomIntInclusive(min, max) {
   min = Math.ceil(min);
@@ -69,9 +57,8 @@ function getRandomIntInclusive(min, max) {
 
 // Функция поиска случайного элемента в массиве
 function getRandomElement(array) {
-  var maxArrayElement = array.length - 1;
-  var getRandomElementOrder = getRandomIntInclusive(0, maxArrayElement);
-  return [array[getRandomElementOrder], getRandomElementOrder];
+  var getRandomElementPosition = getRandomIntInclusive(0, array.length - 1);
+  return array[getRandomElementPosition];
 }
 
 // Функция для создания описания
@@ -104,17 +91,19 @@ function addNewComment(messagesArray, namesArray) {
 // Функция для создания новой фотографии
 function addNewPhoto(namesArray, messagesArray, descriptionsArray) {
   var photos = [];
-  var newArray = getArray(1, 25); // Создаю новый массив от 1 до 25
+  var newArray = []; // Создаю новый массив от 1 до 25
+  for (var n = 1; n < 25; n++) {
+    newArray.push(n);
+  }
 
   for (var k = 1; k < 25; k++) {
-    var tmp = getRandomElement(newArray); // Присваиваю tmp массив со случайным значение из массива от 1 до 25 и порядком элемента
+    var randomArrayPosition = getRandomIntInclusive(0, newArray.length - 1);
+    var tmpArray = newArray.splice(randomArrayPosition, 1); // уменьшаю массив newArray
     var descriptionArrayRandomElement = getRandomElement(descriptionsArray);
-    newArray.splice(tmp[1], 1); // Удаляю позицию tmp в массиве newArray
-
 
     photos.push({
-      url: 'photos/' + tmp[0] + '.jpg',
-      description: descriptionArrayRandomElement[0],
+      url: 'photos/' + tmpArray[0] + '.jpg',
+      description: descriptionArrayRandomElement,
       likes: getRandomIntInclusive(15, 200),
       comments: addNewComment(messagesArray, namesArray)
     });
@@ -128,8 +117,8 @@ var photosArray = addNewPhoto(names, messages, descriptions);
 var photoTemplate = document.querySelector('#picture').content;
 var photoList = document.querySelector('.pictures');
 
-function renderPhoto(photosElement) {
-  var photoElement = photoTemplate.cloneNode(true);
+function renderPhoto(photosElement, templateElement) {
+  var photoElement = templateElement.cloneNode(true);
 
   photoElement.querySelector('.picture__img').src = photosElement.url;
   photoElement.querySelector('.picture__likes').textContent = photosElement.likes;
@@ -140,7 +129,7 @@ function renderPhoto(photosElement) {
 
 var fragment = document.createDocumentFragment();
 for (i = 0; i < photosArray.length; i++) {
-  fragment.appendChild(renderPhoto(photosArray[i]));
+  fragment.appendChild(renderPhoto(photosArray[i], photoTemplate));
 }
 
 photoList.appendChild(fragment);
