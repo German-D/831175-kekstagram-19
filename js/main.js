@@ -1,6 +1,17 @@
 'use strict';
 
 var i;
+var photos = [];
+
+var bigPicture = document.querySelector('.big-picture');
+var bigPictureImg = document.querySelector('.big-picture__img');
+var likesCount = document.querySelector('.likes-count');
+var commentsCount = document.querySelector('.comments-count');
+var socialComments = document.querySelector('.social__comments');
+var socialCaption = document.querySelector('.social__caption');
+
+document.querySelector('body').classList.add('modal-open');
+bigPicture.classList.remove('hidden');
 
 var names = [
   'German',
@@ -66,9 +77,9 @@ function addNewMessage(messageList) {
   var newMessage;
   var tmp = getRandomIntInclusive(1, 2); // Случайное число от 1 до 2 включительно
   if (tmp === 1) {
-    newMessage = messageList[getRandomIntInclusive(0, 6)];
+    newMessage = messageList[getRandomIntInclusive(0, 5)];
   } else {
-    newMessage = messageList[getRandomIntInclusive(0, 6)] + messageList[getRandomIntInclusive(0, 6)];
+    newMessage = messageList[getRandomIntInclusive(0, 5)] + messageList[getRandomIntInclusive(0, 5)];
   }
   return newMessage;
 }
@@ -91,7 +102,6 @@ function addNewComment(messagesArray, namesArray) {
 // Функция для создания новой фотографии
 function addNewPhoto(namesArray, messagesArray, descriptionsArray) {
   var photosCount = 25;
-  var photos = [];
   var newArray = []; // Создаю новый массив от 1 до 25
   for (var n = 1; n <= photosCount; n++) {
     newArray.push(n);
@@ -135,3 +145,33 @@ for (i = 0; i < photosArray.length; i++) {
 
 photoList.appendChild(fragment);
 
+var firstPhoto = photos[0];
+bigPictureImg.src = firstPhoto.url;
+likesCount.textContent = firstPhoto.likes;
+commentsCount.textContent = firstPhoto.comments.length;
+socialCaption.textContent = firstPhoto.description;
+
+// В задании поросят отрисовать cписок комментариев под фотографией
+// В верстке есть два li. Кол-во комментариев до 10, задаётся в функции addNewComment
+// Решил сделать логику: Если комментарий один, то меняю знавчения в первом li, а во втором останутся дефолтные.
+// Если комментариев больше одного, то меняю описание обоих li на первые два
+
+if (firstPhoto.comments.length === 1) {
+  socialComments.querySelector('.social__picture').src = firstPhoto.comments[0].avatar;
+  socialComments.querySelector('.social__picture').alt = firstPhoto.comments[0].name;
+  socialComments.querySelector('.social__text').textContent = firstPhoto.comments[0].message;
+} else {
+  for (i = 0; i < 2; i++) {
+
+    var firstComment = socialComments.querySelectorAll('li')[0]; // выбираю первый li
+    var secondComment = socialComments.querySelectorAll('li')[1]; // выбираю второй li
+
+    firstComment.querySelector('.social__picture').src = firstPhoto.comments[0].avatar;
+    firstComment.querySelector('.social__picture').alt = firstPhoto.comments[0].name;
+    firstComment.querySelector('.social__text').textContent = firstPhoto.comments[0].message;
+
+    secondComment.querySelector('.social__picture').src = firstPhoto.comments[1].avatar;
+    secondComment.querySelector('.social__picture').alt = firstPhoto.comments[1].name;
+    secondComment.querySelector('.social__text').textContent = firstPhoto.comments[1].message;
+  }
+}
