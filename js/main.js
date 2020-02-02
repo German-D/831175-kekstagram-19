@@ -5,6 +5,8 @@ var photos = [];
 
 var bigPicture = document.querySelector('.big-picture');
 var bigPictureImg = document.querySelector('.big-picture__img');
+var socialCommentCount = document.querySelector('.social__comment-count');
+var commentsLoader = document.querySelector('.comments-loader');
 var likesCount = document.querySelector('.likes-count');
 var commentsCount = document.querySelector('.comments-count');
 var socialComments = document.querySelector('.social__comments');
@@ -12,6 +14,8 @@ var socialCaption = document.querySelector('.social__caption');
 
 document.querySelector('body').classList.add('modal-open');
 bigPicture.classList.remove('hidden');
+socialCommentCount.classList.add('hidden'); // Прячу блоки счётчика комментариев
+commentsLoader.classList.add('hidden'); // и загрузки новых комментариев
 
 var names = [
   'German',
