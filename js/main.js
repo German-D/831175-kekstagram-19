@@ -1,6 +1,24 @@
 'use strict';
 
 var i;
+var photos = [];
+
+var dom = {
+  bigPicture: document.querySelector('.big-picture'),
+  bigPictureImg: document.querySelector('.big-picture__img'),
+  bigPictureTagImg: document.querySelector('.big-picture__img img'),
+  socialCommentCount: document.querySelector('.social__comment-count'),
+  commentsLoader: document.querySelector('.comments-loader'),
+  likesCount: document.querySelector('.likes-count'),
+  commentsCount: document.querySelector('.comments-count'),
+  socialComments: document.querySelector('.social__comments'),
+  socialCaption: document.querySelector('.social__caption')
+};
+
+document.querySelector('body').classList.add('modal-open');
+dom.bigPicture.classList.remove('hidden');
+dom.socialCommentCount.classList.add('hidden'); // Прячу блоки счётчика комментариев
+dom.commentsLoader.classList.add('hidden'); // и загрузки новых комментариев
 
 var names = [
   'German',
@@ -66,9 +84,9 @@ function addNewMessage(messageList) {
   var newMessage;
   var tmp = getRandomIntInclusive(1, 2); // Случайное число от 1 до 2 включительно
   if (tmp === 1) {
-    newMessage = messageList[getRandomIntInclusive(0, 6)];
+    newMessage = messageList[getRandomIntInclusive(0, 5)];
   } else {
-    newMessage = messageList[getRandomIntInclusive(0, 6)] + messageList[getRandomIntInclusive(0, 6)];
+    newMessage = messageList[getRandomIntInclusive(0, 5)] + messageList[getRandomIntInclusive(0, 5)];
   }
   return newMessage;
 }
@@ -89,9 +107,8 @@ function addNewComment(messagesArray, namesArray) {
 }
 
 // Функция для создания новой фотографии
-function addNewPhoto(namesArray, messagesArray, descriptionsArray) {
+function addNewPhoto(namesArray, messagesArray, descriptionsArray, mainArray) {
   var photosCount = 25;
-  var photos = [];
   var newArray = []; // Создаю новый массив от 1 до 25
   for (var n = 1; n <= photosCount; n++) {
     newArray.push(n);
@@ -102,17 +119,17 @@ function addNewPhoto(namesArray, messagesArray, descriptionsArray) {
     var tmpArray = newArray.splice(randomArrayPosition, 1); // уменьшаю массив newArray
     var descriptionArrayRandomElement = getRandomElement(descriptionsArray);
 
-    photos.push({
+    mainArray.push({
       url: 'photos/' + tmpArray[0] + '.jpg',
       description: descriptionArrayRandomElement,
       likes: getRandomIntInclusive(15, 200),
       comments: addNewComment(messagesArray, namesArray)
     });
   }
-  return photos;
+  return mainArray;
 }
 
-var photosArray = addNewPhoto(names, messages, descriptions);
+var photosArray = addNewPhoto(names, messages, descriptions, photos);
 
 
 var photoTemplate = document.querySelector('#picture').content;
@@ -135,3 +152,33 @@ for (i = 0; i < photosArray.length; i++) {
 
 photoList.appendChild(fragment);
 
+var firstPhoto = photos[0];
+dom.bigPictureTagImg.src = firstPhoto.url;
+dom.likesCount.textContent = firstPhoto.likes;
+dom.commentsCount.textContent = firstPhoto.comments.length;
+dom.socialCaption.textContent = firstPhoto.description;
+
+// В задании поросят отрисовать cписок комментариев под фотографией
+// В верстке есть два li. Кол-во комментариев до 10, задаётся в функции addNewComment
+// Решил сделать логику:
+// Если комментарий один, то меняю знавчения в первом li, а во втором останутся дефолтные.
+// Если комментариев больше одного, то меняю описание обоих li на первые два
+if (firstPhoto.comments.length === 1) {
+  dom.socialComments.querySelector('.social__picture').src = firstPhoto.comments[0].avatar;
+  dom.socialComments.querySelector('.social__picture').alt = firstPhoto.comments[0].name;
+  dom.socialComments.querySelector('.social__text').textContent = firstPhoto.comments[0].message;
+} else {
+  for (i = 0; i < 2; i++) {
+
+    var firstComment = dom.socialComments.querySelectorAll('li')[0]; // выбираю первый li
+    var secondComment = dom.socialComments.querySelectorAll('li')[1]; // выбираю второй li
+
+    firstComment.querySelector('.social__picture').src = firstPhoto.comments[0].avatar;
+    firstComment.querySelector('.social__picture').alt = firstPhoto.comments[0].name;
+    firstComment.querySelector('.social__text').textContent = firstPhoto.comments[0].message;
+
+    secondComment.querySelector('.social__picture').src = firstPhoto.comments[1].avatar;
+    secondComment.querySelector('.social__picture').alt = firstPhoto.comments[1].name;
+    secondComment.querySelector('.social__text').textContent = firstPhoto.comments[1].message;
+  }
+}
