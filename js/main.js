@@ -226,7 +226,7 @@ var effectLevelPinMouseupHandler = function () {
 
 var effectsListClickHandler = function () {
   calculatePinProgress();
-  console.log(pinProgress); // TO-DO: Почему-то при клике вызывается дважды ?!
+  // console.log(pinProgress); TO-DO: Почему-то при клике вызывается дважды ?!
 };
 
 var textHashtagsInputhandler = function () {
@@ -246,7 +246,7 @@ var textHashtagsInputhandler = function () {
     var uniqueArray = [];
     for (i = 0; i < array.length; i++) {
       if (!uniqueArray.includes(array[i])) {
-        uniqueArray.push(array[i])
+        uniqueArray.push(array[i]);
       }
     }
     return uniqueArray;
@@ -268,7 +268,7 @@ var textHashtagsInputhandler = function () {
 
     if (hashtagsArray.length > uniqueHashtagsArray.length) { // Один и тот же хэштег не модет быть использолван дважды
       dom.imgUploadSubmit.setAttribute('disabled', 'disabled');
-      dom.textHashtags.setCustomValidity('Нельзя указать одинаковые хэштеги');
+      dom.textHashtags.setCustomValidity('Нельзя указать одинаковые хэштеги ' + pinProgress);
     }
   }
 };
