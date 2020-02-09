@@ -2,7 +2,6 @@
 
 var i;
 var photos = [];
-var pinProgress;
 
 var dom = {
   bigPicture: document.querySelector('.big-picture'),
@@ -217,43 +216,36 @@ var calculatePinProgress = function () {
   var coordinateLineX = dom.effectLevelLine.getBoundingClientRect().x;
   var coordinatePinX = dom.effectLevelPin.getBoundingClientRect().x;
   var lineLength = dom.effectLevelLine.clientWidth;
-  pinProgress = Math.round(100 * (coordinatePinX - coordinateLineX) / lineLength);
+  var pinProgress = Math.round(100 * (coordinatePinX - coordinateLineX) / lineLength);
+  return pinProgress;
 };
 
 var effectLevelPinMouseupHandler = function () {
   calculatePinProgress();
 };
 
-var effectsListClickHandler = function () {
-  calculatePinProgress();
-  // console.log(pinProgress); TO-DO: Почему-то при клике вызывается дважды ?!
+var effectsListClickHandler = function (evt) {
+  if (evt.target.tagName !== 'LABEL') {
+    calculatePinProgress();
+  }
 };
 
 var textHashtagsInputhandler = function () {
   var hashtagsValue = dom.textHashtags.value;
-  var hashtagsArray = hashtagsValue.split('# ');
-  var RegExpHashtags = /^#[a-zA-Z0-9а-яА-Я]{1,19}$/;
-
-  var toLowCaseArray = function (array) { // создаю новый залоукейсеный массив
-    var lowCaseArray = array;
-    for (i = 0; i < array.length; i++) {
-      lowCaseArray.push(array[i].toLowerCase());
-    }
-    return lowCaseArray;
-  };
+  var hashtagsArray = hashtagsValue.split('/\s*/');
+  var RegExpHashtags = /^#[a-zA-Z0-9а-яА-Я]{1,19}$/i;
 
   var getUniqueArray = function (array) { // создаю массив только с уникальными значениями
     var uniqueArray = [];
     for (i = 0; i < array.length; i++) {
-      if (!uniqueArray.includes(array[i])) {
-        uniqueArray.push(array[i]);
+      if (!uniqueArray.includes(array[i].toLowerCase())) {
+        uniqueArray.push(array[i].toLowerCase());
       }
     }
     return uniqueArray;
   };
 
-  var lowCaseHashtagsArray = toLowCaseArray(hashtagsArray);
-  var uniqueHashtagsArray = getUniqueArray(lowCaseHashtagsArray);
+  var uniqueHashtagsArray = getUniqueArray(hashtagsArray);
 
   for (i = 0; i < hashtagsArray.length; i++) {
     if (!RegExpHashtags.test(hashtagsArray[i])) { // Проверка на регулярку
@@ -268,7 +260,7 @@ var textHashtagsInputhandler = function () {
 
     if (hashtagsArray.length > uniqueHashtagsArray.length) { // Один и тот же хэштег не модет быть использолван дважды
       dom.imgUploadSubmit.setAttribute('disabled', 'disabled');
-      dom.textHashtags.setCustomValidity('Нельзя указать одинаковые хэштеги ' + pinProgress);
+      dom.textHashtags.setCustomValidity('Нельзя указать одинаковые хэштеги ');
     }
   }
 };
