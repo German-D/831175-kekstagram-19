@@ -232,9 +232,7 @@ var effectsListClickHandler = function (evt) {
 
 var textHashtagsInputhandler = function () {
   var hashtagsValue = dom.textHashtags.value;
-  // var hashtagsArray = hashtagsValue.split('/\s*/');
-  var hashtagsArray = hashtagsValue.split(' ');
-  // console.log(hashtagsArray);
+  var hashtagsArray = hashtagsValue.split(/\s/);
   var RegExpHashtags = /^#[a-zA-Z0-9а-яА-Я]{1,19}$/i;
 
   var getUniqueArray = function (array) { // создаю массив только с уникальными значениями
@@ -267,11 +265,13 @@ var textHashtagsInputhandler = function () {
 
     if (hashtagsArray.length > uniqueHashtagsArray.length) { // Один и тот же хэштег не модет быть использолван дважды
       dom.imgUploadSubmit.setAttribute('disabled', 'disabled');
-      dom.textHashtags.setCustomValidity('Нельзя указать одинаковые хэштеги ');
+      dom.textHashtags.setCustomValidity('Нельзя указать одинаковые хэштеги');
       // console.log('Один и тот же хэштег не модет быть использолван дважды');
       return;
     } else {
       dom.imgUploadSubmit.removeAttribute('disabled');
+      dom.textHashtags.setCustomValidity('');
+
     }
   }
 };
