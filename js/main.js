@@ -232,8 +232,9 @@ var effectsListClickHandler = function (evt) {
 
 var textHashtagsInputhandler = function () {
   var hashtagsValue = dom.textHashtags.value;
-  var hashtagsArray = hashtagsValue.split('/\s*/');
-  console.log(hashtagsArray);
+  // var hashtagsArray = hashtagsValue.split('/\s*/');
+  var hashtagsArray = hashtagsValue.split(' ');
+  // console.log(hashtagsArray);
   var RegExpHashtags = /^#[a-zA-Z0-9а-яА-Я]{1,19}$/i;
 
   var getUniqueArray = function (array) { // создаю массив только с уникальными значениями
@@ -250,23 +251,24 @@ var textHashtagsInputhandler = function () {
 
   for (i = 0; i < hashtagsArray.length; i++) {
     if (!RegExpHashtags.test(hashtagsArray[i])) { // Проверка на регулярку
+      // console.log(hashtagsArray[i]);
       dom.imgUploadSubmit.setAttribute('disabled', 'disabled');
       dom.textHashtags.setCustomValidity('Хэштег начинается с #, не содержит спецсимволы и не может состоять из #');
-      console.log('Проверка на регулярку');
+      // console.log('Проверка на регулярку');
       return;
     }
 
     if (hashtagsArray.length > 5) { // Максимум 5 хэштегов
       dom.imgUploadSubmit.setAttribute('disabled', 'disabled');
       dom.textHashtags.setCustomValidity('Нельзя указывать больше 5 хэштегов');
-      console.log('Максимум 5 хэштегов');
+      // console.log('Максимум 5 хэштегов');
       return;
     }
 
     if (hashtagsArray.length > uniqueHashtagsArray.length) { // Один и тот же хэштег не модет быть использолван дважды
       dom.imgUploadSubmit.setAttribute('disabled', 'disabled');
       dom.textHashtags.setCustomValidity('Нельзя указать одинаковые хэштеги ');
-      console.log('Один и тот же хэштег не модет быть использолван дважды');
+      // console.log('Один и тот же хэштег не модет быть использолван дважды');
       return;
     } else {
       dom.imgUploadSubmit.removeAttribute('disabled');
