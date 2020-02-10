@@ -12,11 +12,19 @@ var dom = {
   likesCount: document.querySelector('.likes-count'),
   commentsCount: document.querySelector('.comments-count'),
   socialComments: document.querySelector('.social__comments'),
-  socialCaption: document.querySelector('.social__caption')
+  socialCaption: document.querySelector('.social__caption'),
+  uploadFile: document.querySelector('#upload-file'),
+  imgUploadOverlay: document.querySelector('.img-upload__overlay'),
+  imgUploadCancel: document.querySelector('.img-upload__cancel'),
+  textHashtags: document.querySelector('.text__hashtags'),
+  effectLevelPin: document.querySelector('.effect-level__pin'),
+  effectLevelLine: document.querySelector('.effect-level__line'),
+  effectsList: document.querySelector('.effects__list'),
+  imgUploadSubmit: document.querySelector('.img-upload__submit')
 };
 
 document.querySelector('body').classList.add('modal-open');
-dom.bigPicture.classList.remove('hidden');
+// dom.bigPicture.classList.remove('hidden');
 dom.socialCommentCount.classList.add('hidden'); // Прячу блоки счётчика комментариев
 dom.commentsLoader.classList.add('hidden'); // и загрузки новых комментариев
 
@@ -182,3 +190,87 @@ if (firstPhoto.comments.length === 1) {
     secondComment.querySelector('.social__text').textContent = firstPhoto.comments[1].message;
   }
 }
+
+var uploadFileChangeHandler = function () {
+  dom.imgUploadOverlay.classList.remove('hidden');
+};
+
+var imgUploadCancelClickHandler = function () {
+  dom.imgUploadOverlay.classList.add('hidden');
+  dom.uploadFile.value = '';
+};
+
+var documentKeydownHandler = function (evt) {
+  if (evt.key === 'Escape') {
+    imgUploadCancelClickHandler();
+  }
+};
+
+var textHashtagsKeydownhandler = function (evt) {
+  if (evt.key === 'Escape') {
+    evt.stopPropagation();
+  }
+};
+
+var calculatePinProgress = function () {
+  var coordinateLineX = dom.effectLevelLine.getBoundingClientRect().x;
+  var coordinatePinX = dom.effectLevelPin.getBoundingClientRect().x;
+  var lineLength = dom.effectLevelLine.clientWidth;
+  var pinProgress = Math.round(100 * (coordinatePinX - coordinateLineX) / lineLength);
+  return pinProgress;
+};
+
+var effectLevelPinMouseupHandler = function () {
+  calculatePinProgress();
+};
+
+var effectsListClickHandler = function (evt) {
+  if (evt.target.tagName !== 'LABEL') {
+    calculatePinProgress();
+  }
+};
+
+var textHashtagsInputhandler = function () {
+  var hashtagsValue = dom.textHashtags.value;
+  var hashtagsArray = hashtagsValue.split(/\s+/);
+  var RegExpHashtags = /^#[a-zA-Z0-9а-яА-Я]{1,19}$/i;
+
+  var getUniqueArray = function (array) { // создаю массив только с уникальными значениями
+    var uniqueArray = [];
+    for (i = 0; i < array.length; i++) {
+      var arrayLowCase = array[i].toLowerCase();
+      if (!uniqueArray.includes(arrayLowCase)) {
+        uniqueArray.push(arrayLowCase);
+      }
+    }
+    return uniqueArray;
+  };
+
+  var uniqueHashtagsArray = getUniqueArray(hashtagsArray);
+
+  for (i = 0; i < hashtagsArray.length; i++) {
+    if (!RegExpHashtags.test(hashtagsArray[i])) { // Проверка на регулярку
+      dom.textHashtags.setCustomValidity('Хэштег начинается с #, не содержит спецсимволы и не может состоять из #');
+      return;
+    }
+
+    if (hashtagsArray.length > 5) { // Максимум 5 хэштегов
+      dom.textHashtags.setCustomValidity('Нельзя указывать больше 5 хэштегов');
+      return;
+    }
+
+    if (hashtagsArray.length > uniqueHashtagsArray.length) { // Один и тот же хэштег не модет быть использолван дважды
+      dom.textHashtags.setCustomValidity('Нельзя указать одинаковые хэштеги');
+      return;
+    }
+    dom.textHashtags.setCustomValidity('');
+  }
+};
+
+dom.uploadFile.addEventListener('change', uploadFileChangeHandler); // Показываю форму при загрузке изображения
+dom.imgUploadCancel.addEventListener('click', imgUploadCancelClickHandler); // Закрытие формы по крестику
+document.addEventListener('keydown', documentKeydownHandler); // Закрытие формы по Esc
+dom.textHashtags.addEventListener('keydown', textHashtagsKeydownhandler); // Не закрываю форму по Esc на инпуте
+dom.effectLevelPin.addEventListener('mouseup', effectLevelPinMouseupHandler); // Определяю прогресс пина
+dom.effectsList.addEventListener('click', effectsListClickHandler); // Обнуляю значение прогресса пина
+dom.textHashtags.addEventListener('input', textHashtagsInputhandler); // Валидация хэштегов
