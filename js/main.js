@@ -238,8 +238,9 @@ var textHashtagsInputhandler = function () {
   var getUniqueArray = function (array) { // создаю массив только с уникальными значениями
     var uniqueArray = [];
     for (i = 0; i < array.length; i++) {
-      if (!uniqueArray.includes(array[i].toLowerCase())) {
-        uniqueArray.push(array[i].toLowerCase());
+      var arrayLowCase = array[i].toLowerCase();
+      if (!uniqueArray.includes(arrayLowCase)) {
+        uniqueArray.push(arrayLowCase);
       }
     }
     return uniqueArray;
