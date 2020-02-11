@@ -20,11 +20,12 @@ var dom = {
   effectLevelPin: document.querySelector('.effect-level__pin'),
   effectLevelLine: document.querySelector('.effect-level__line'),
   effectsList: document.querySelector('.effects__list'),
-  imgUploadSubmit: document.querySelector('.img-upload__submit')
+  imgUploadSubmit: document.querySelector('.img-upload__submit'),
+  pictures: document.querySelector('.pictures'),
+  bigPictureCancel: document.querySelector('.big-picture__cancel')
 };
 
 document.querySelector('body').classList.add('modal-open');
-// dom.bigPicture.classList.remove('hidden');
 dom.socialCommentCount.classList.add('hidden'); // Прячу блоки счётчика комментариев
 dom.commentsLoader.classList.add('hidden'); // и загрузки новых комментариев
 
@@ -143,19 +144,20 @@ var photosArray = addNewPhoto(names, messages, descriptions, photos);
 var photoTemplate = document.querySelector('#picture').content;
 var photoList = document.querySelector('.pictures');
 
-function renderPhoto(photosElement, templateElement) {
+function renderPhoto(photosElement, templateElement, i) {
   var photoElement = templateElement.cloneNode(true);
 
   photoElement.querySelector('.picture__img').src = photosElement.url;
   photoElement.querySelector('.picture__likes').textContent = photosElement.likes;
   photoElement.querySelector('.picture__comments').textContent = photosElement.comments.length;
+  photoElement.querySelector('.picture__img').dataset.id = i;
 
   return photoElement;
 }
 
 var fragment = document.createDocumentFragment();
 for (i = 0; i < photosArray.length; i++) {
-  fragment.appendChild(renderPhoto(photosArray[i], photoTemplate));
+  fragment.appendChild(renderPhoto(photosArray[i], photoTemplate, i));
 }
 
 photoList.appendChild(fragment);
@@ -203,6 +205,7 @@ var imgUploadCancelClickHandler = function () {
 var documentKeydownHandler = function (evt) {
   if (evt.key === 'Escape') {
     imgUploadCancelClickHandler();
+    bigPictureCancelClickHandler();
   }
 };
 
@@ -267,6 +270,19 @@ var textHashtagsInputhandler = function () {
   }
 };
 
+var picturesClickHandler = function (evt) {
+  if (evt.target.classList.contains('picture__img')) {
+    var photoInfo = photos[evt.target.dataset.id];
+    dom.bigPicture.querySelector('img').src = photoInfo.url;
+    dom.bigPicture.classList.remove('hidden');
+  }
+};
+
+var bigPictureCancelClickHandler = function () {
+  dom.bigPicture.classList.add('hidden');
+};
+
+
 dom.uploadFile.addEventListener('change', uploadFileChangeHandler); // Показываю форму при загрузке изображения
 dom.imgUploadCancel.addEventListener('click', imgUploadCancelClickHandler); // Закрытие формы по крестику
 document.addEventListener('keydown', documentKeydownHandler); // Закрытие формы по Esc
@@ -274,3 +290,6 @@ dom.textHashtags.addEventListener('keydown', textHashtagsKeydownhandler); // Н�
 dom.effectLevelPin.addEventListener('mouseup', effectLevelPinMouseupHandler); // Определяю прогресс пина
 dom.effectsList.addEventListener('click', effectsListClickHandler); // Обнуляю значение прогресса пина
 dom.textHashtags.addEventListener('input', textHashtagsInputhandler); // Валидация хэштегов
+dom.pictures.addEventListener('click', picturesClickHandler);
+dom.bigPictureCancel.addEventListener('click', bigPictureCancelClickHandler);
+
