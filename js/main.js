@@ -22,7 +22,9 @@ var dom = {
   effectsList: document.querySelector('.effects__list'),
   imgUploadSubmit: document.querySelector('.img-upload__submit'),
   pictures: document.querySelector('.pictures'),
-  bigPictureCancel: document.querySelector('.big-picture__cancel')
+  bigPictureCancel: document.querySelector('.big-picture__cancel'),
+  socialFooterText: document.querySelector('.social__footer-text'),
+  socialFooterBtn: document.querySelector('.social__footer-btn')
 };
 
 document.querySelector('body').classList.add('modal-open');
@@ -144,13 +146,13 @@ var photosArray = addNewPhoto(names, messages, descriptions, photos);
 var photoTemplate = document.querySelector('#picture').content;
 var photoList = document.querySelector('.pictures');
 
-function renderPhoto(photosElement, templateElement, i) {
+function renderPhoto(photosElement, templateElement, k) {
   var photoElement = templateElement.cloneNode(true);
 
   photoElement.querySelector('.picture__img').src = photosElement.url;
   photoElement.querySelector('.picture__likes').textContent = photosElement.likes;
   photoElement.querySelector('.picture__comments').textContent = photosElement.comments.length;
-  photoElement.querySelector('.picture__img').dataset.id = i;
+  photoElement.querySelector('.picture__img').dataset.id = k;
 
   return photoElement;
 }
@@ -206,6 +208,10 @@ var documentKeydownHandler = function (evt) {
   if (evt.key === 'Escape') {
     imgUploadCancelClickHandler();
     bigPictureCancelClickHandler();
+  }
+  if (evt.key === 'Enter') {
+    console.log (evt.target);
+    picturesClickHandler();
   }
 };
 
@@ -272,8 +278,19 @@ var textHashtagsInputhandler = function () {
 
 var picturesClickHandler = function (evt) {
   if (evt.target.classList.contains('picture__img')) {
+    // console.log(photos);
     var photoInfo = photos[evt.target.dataset.id];
     dom.bigPicture.querySelector('img').src = photoInfo.url;
+    dom.bigPicture.querySelector('.likes-count').textContent = photoInfo.likes;
+    dom.bigPicture.querySelector('.social__caption').textContent = photoInfo.description;
+    dom.bigPicture.querySelectorAll('.social__text')[0].textContent = photoInfo.comments[0].message;
+    dom.bigPicture.querySelectorAll('.social__picture')[0].src = photoInfo.comments[0].avatar;
+
+    if (photoInfo.comments.length > 1) {
+      dom.bigPicture.querySelectorAll('.social__text')[1].textContent = photoInfo.comments[1].message;
+      dom.bigPicture.querySelectorAll('.social__picture')[1].src = photoInfo.comments[1].avatar;
+
+    }
     dom.bigPicture.classList.remove('hidden');
   }
 };
@@ -282,6 +299,13 @@ var bigPictureCancelClickHandler = function () {
   dom.bigPicture.classList.add('hidden');
 };
 
+var socialFooterTextInputHandler = function (e) {
+  var socialFooterTextValue = e.target.value;
+  console.log(socialFooterTextValue);
+  if (socialFooterTextValue.length > 140) {
+    dom.socialFooterText.setCustomValidity('Длина комментария не должна привышать 140 символов');
+  }
+};
 
 dom.uploadFile.addEventListener('change', uploadFileChangeHandler); // Показываю форму при загрузке изображения
 dom.imgUploadCancel.addEventListener('click', imgUploadCancelClickHandler); // Закрытие формы по крестику
@@ -290,6 +314,6 @@ dom.textHashtags.addEventListener('keydown', textHashtagsKeydownhandler); // Н�
 dom.effectLevelPin.addEventListener('mouseup', effectLevelPinMouseupHandler); // Определяю прогресс пина
 dom.effectsList.addEventListener('click', effectsListClickHandler); // Обнуляю значение прогресса пина
 dom.textHashtags.addEventListener('input', textHashtagsInputhandler); // Валидация хэштегов
-dom.pictures.addEventListener('click', picturesClickHandler);
-dom.bigPictureCancel.addEventListener('click', bigPictureCancelClickHandler);
-
+dom.pictures.addEventListener('click', picturesClickHandler); // Клик по контейнеру
+dom.bigPictureCancel.addEventListener('click', bigPictureCancelClickHandler); // Закрытие большого фото
+dom.socialFooterText.addEventListener('input', socialFooterTextInputHandler); // Валидация комментария
