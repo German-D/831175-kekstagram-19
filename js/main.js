@@ -210,7 +210,6 @@ var documentKeydownHandler = function (evt) {
     bigPictureCancelClickHandler();
   }
   if (evt.key === 'Enter') {
-    console.log (evt.target);
     picturesClickHandler();
   }
 };
@@ -297,13 +296,19 @@ var picturesClickHandler = function (evt) {
 
 var bigPictureCancelClickHandler = function () {
   dom.bigPicture.classList.add('hidden');
+  dom.socialFooterText.value = '';
 };
 
 var socialFooterTextInputHandler = function (e) {
   var socialFooterTextValue = e.target.value;
-  console.log(socialFooterTextValue);
   if (socialFooterTextValue.length > 140) {
     dom.socialFooterText.setCustomValidity('Длина комментария не должна привышать 140 символов');
+  }
+};
+
+var socialFooterTextKeydownHandler = function (evt) {
+  if (evt.key === 'Escape') {
+    evt.stopPropagation();
   }
 };
 
@@ -317,3 +322,4 @@ dom.textHashtags.addEventListener('input', textHashtagsInputhandler); // Вал�
 dom.pictures.addEventListener('click', picturesClickHandler); // Клик по контейнеру
 dom.bigPictureCancel.addEventListener('click', bigPictureCancelClickHandler); // Закрытие большого фото
 dom.socialFooterText.addEventListener('input', socialFooterTextInputHandler); // Валидация комментария
+dom.socialFooterText.addEventListener('keydown', socialFooterTextKeydownHandler);
