@@ -20,11 +20,14 @@ var dom = {
   effectLevelPin: document.querySelector('.effect-level__pin'),
   effectLevelLine: document.querySelector('.effect-level__line'),
   effectsList: document.querySelector('.effects__list'),
-  imgUploadSubmit: document.querySelector('.img-upload__submit')
+  imgUploadSubmit: document.querySelector('.img-upload__submit'),
+  pictures: document.querySelector('.pictures'),
+  bigPictureCancel: document.querySelector('.big-picture__cancel'),
+  socialFooterText: document.querySelector('.social__footer-text'),
+  socialFooterBtn: document.querySelector('.social__footer-btn')
 };
 
 document.querySelector('body').classList.add('modal-open');
-// dom.bigPicture.classList.remove('hidden');
 dom.socialCommentCount.classList.add('hidden'); // Прячу блоки счётчика комментариев
 dom.commentsLoader.classList.add('hidden'); // и загрузки новых комментариев
 
@@ -74,6 +77,7 @@ var messages = [
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
 ];
 
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
 // Функция получения случайного целого числа в заданном интервале. Максимум и минимум включаются
 function getRandomIntInclusive(min, max) {
   min = Math.ceil(min);
@@ -81,13 +85,15 @@ function getRandomIntInclusive(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
 // Функция поиска случайного элемента в массиве
 function getRandomElement(array) {
   var getRandomElementPosition = getRandomIntInclusive(0, array.length - 1);
   return array[getRandomElementPosition];
 }
 
-// Функция для создания описания
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+// Функция для создания описания одной фотографии
 function addNewMessage(messageList) {
   var newMessage;
   var tmp = getRandomIntInclusive(1, 2); // Случайное число от 1 до 2 включительно
@@ -99,7 +105,8 @@ function addNewMessage(messageList) {
   return newMessage;
 }
 
-// Функция для создания комментария
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+// Функция для создания комментария к одной фотографии
 function addNewComment(messagesArray, namesArray) {
   var comments = [];
   var quantityComments = getRandomIntInclusive(1, 10); // Случайное число от 1 до 10 включительно
@@ -114,7 +121,8 @@ function addNewComment(messagesArray, namesArray) {
   return comments;
 }
 
-// Функция для создания новой фотографии
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+// Функция для создания одной новой фотографии
 function addNewPhoto(namesArray, messagesArray, descriptionsArray, mainArray) {
   var photosCount = 25;
   var newArray = []; // Создаю новый массив от 1 до 25
@@ -137,25 +145,26 @@ function addNewPhoto(namesArray, messagesArray, descriptionsArray, mainArray) {
   return mainArray;
 }
 
-var photosArray = addNewPhoto(names, messages, descriptions, photos);
-
-
-var photoTemplate = document.querySelector('#picture').content;
-var photoList = document.querySelector('.pictures');
-
-function renderPhoto(photosElement, templateElement) {
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+// Отрисовываю все фотографии в доме
+function renderPhoto(photosElement, templateElement, k) {
   var photoElement = templateElement.cloneNode(true);
 
   photoElement.querySelector('.picture__img').src = photosElement.url;
   photoElement.querySelector('.picture__likes').textContent = photosElement.likes;
   photoElement.querySelector('.picture__comments').textContent = photosElement.comments.length;
+  photoElement.querySelector('.picture__img').dataset.id = k;
 
   return photoElement;
 }
 
+var photosArray = addNewPhoto(names, messages, descriptions, photos);
+var photoTemplate = document.querySelector('#picture').content;
+var photoList = document.querySelector('.pictures');
+
 var fragment = document.createDocumentFragment();
 for (i = 0; i < photosArray.length; i++) {
-  fragment.appendChild(renderPhoto(photosArray[i], photoTemplate));
+  fragment.appendChild(renderPhoto(photosArray[i], photoTemplate, i));
 }
 
 photoList.appendChild(fragment);
@@ -191,10 +200,16 @@ if (firstPhoto.comments.length === 1) {
   }
 }
 
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+// Показываю форму обработки фото при загрузке изображения
 var uploadFileChangeHandler = function () {
   dom.imgUploadOverlay.classList.remove('hidden');
 };
 
+dom.uploadFile.addEventListener('change', uploadFileChangeHandler);
+
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+// Закрытие формы эффектов фото по крестику
 var imgUploadCancelClickHandler = function () {
   dom.imgUploadOverlay.classList.add('hidden');
   dom.uploadFile.value = '';
@@ -203,15 +218,36 @@ var imgUploadCancelClickHandler = function () {
 var documentKeydownHandler = function (evt) {
   if (evt.key === 'Escape') {
     imgUploadCancelClickHandler();
+    bigPictureCancelClickHandler();
+  }
+  if (evt.key === 'Enter') {
+    picturesClickHandler(evt);
   }
 };
 
+dom.imgUploadCancel.addEventListener('click', imgUploadCancelClickHandler);
+document.addEventListener('keydown', documentKeydownHandler); // Закрытие формы по Esc
+
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+// Не закрываю форму нового изображения по Esc на инпуте хэштегов
 var textHashtagsKeydownhandler = function (evt) {
   if (evt.key === 'Escape') {
     evt.stopPropagation();
   }
 };
 
+dom.textHashtags.addEventListener('keydown', textHashtagsKeydownhandler);
+
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+// Определяю прогресс пина
+var effectLevelPinMouseupHandler = function () {
+  calculatePinProgress();
+};
+
+dom.effectLevelPin.addEventListener('mouseup', effectLevelPinMouseupHandler);
+
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+// Обнуляю значение прогресса пина
 var calculatePinProgress = function () {
   var coordinateLineX = dom.effectLevelLine.getBoundingClientRect().x;
   var coordinatePinX = dom.effectLevelPin.getBoundingClientRect().x;
@@ -220,16 +256,17 @@ var calculatePinProgress = function () {
   return pinProgress;
 };
 
-var effectLevelPinMouseupHandler = function () {
-  calculatePinProgress();
-};
-
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ */
 var effectsListClickHandler = function (evt) {
   if (evt.target.tagName !== 'LABEL') {
     calculatePinProgress();
   }
 };
 
+dom.effectsList.addEventListener('click', effectsListClickHandler);
+
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+// Валидация инпута ввода хэштегов
 var textHashtagsInputhandler = function () {
   var hashtagsValue = dom.textHashtags.value;
   var hashtagsArray = hashtagsValue.split(/\s+/);
@@ -267,10 +304,69 @@ var textHashtagsInputhandler = function () {
   }
 };
 
-dom.uploadFile.addEventListener('change', uploadFileChangeHandler); // Показываю форму при загрузке изображения
-dom.imgUploadCancel.addEventListener('click', imgUploadCancelClickHandler); // Закрытие формы по крестику
-document.addEventListener('keydown', documentKeydownHandler); // Закрытие формы по Esc
-dom.textHashtags.addEventListener('keydown', textHashtagsKeydownhandler); // Не закрываю форму по Esc на инпуте
-dom.effectLevelPin.addEventListener('mouseup', effectLevelPinMouseupHandler); // Определяю прогресс пина
-dom.effectsList.addEventListener('click', effectsListClickHandler); // Обнуляю значение прогресса пина
-dom.textHashtags.addEventListener('input', textHashtagsInputhandler); // Валидация хэштегов
+dom.textHashtags.addEventListener('input', textHashtagsInputhandler);
+
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+// Клик по контейнеру c фотографиями
+var picturesClickHandler = function (evt) {
+  var getBigImg = function (smallPicture) {
+    dom.bigPicture.querySelector('img').src = smallPicture.url;
+    dom.bigPicture.querySelector('.likes-count').textContent = smallPicture.likes;
+    dom.bigPicture.querySelector('.social__caption').textContent = smallPicture.description;
+    dom.bigPicture.querySelectorAll('.social__text')[0].textContent = smallPicture.comments[0].message;
+    dom.bigPicture.querySelectorAll('.social__picture')[0].src = smallPicture.comments[0].avatar;
+
+    if (smallPicture.comments.length > 1) {
+      dom.bigPicture.querySelectorAll('.social__text')[1].textContent = smallPicture.comments[1].message;
+      dom.bigPicture.querySelectorAll('.social__picture')[1].src = smallPicture.comments[1].avatar;
+    }
+    dom.bigPicture.classList.remove('hidden');
+  };
+
+  // Если клик был клавишой Ентер
+  if (evt.target.classList.contains('picture')) {
+    var photoInfo1 = photos[evt.target.querySelector('.picture__img').dataset.id];
+    getBigImg(photoInfo1);
+    return;
+  }
+
+  // Если клик был мышкой
+  if (evt.target.classList.contains('picture__img')) {
+    var photoInfo = photos[evt.target.dataset.id];
+    getBigImg(photoInfo);
+  }
+};
+
+dom.pictures.addEventListener('click', picturesClickHandler);
+
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+// Закрытие большого фото
+var bigPictureCancelClickHandler = function () {
+  dom.bigPicture.classList.add('hidden');
+  dom.socialFooterText.value = '';
+};
+
+dom.bigPictureCancel.addEventListener('click', bigPictureCancelClickHandler);
+
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+// Валидация комментария
+var socialFooterTextInputHandler = function (evt) {
+  var socialFooterTextValue = evt.target.value;
+  if (socialFooterTextValue.length > 140) {
+    dom.socialFooterText.setCustomValidity('Длина комментария не должна привышать 140 символов');
+    return;
+  }
+  dom.socialFooterText.setCustomValidity('');
+};
+
+dom.socialFooterText.addEventListener('input', socialFooterTextInputHandler);
+
+/* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+// Не закрываю форму по Enter
+var socialFooterTextKeydownHandler = function (evt) {
+  if (evt.key === 'Escape') {
+    evt.stopPropagation();
+  }
+};
+
+dom.socialFooterText.addEventListener('keydown', socialFooterTextKeydownHandler);
