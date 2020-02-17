@@ -26,7 +26,7 @@
   }
 
   var bigPictureTagImg = document.querySelector('.big-picture__img img');
-  var photosArray = window.addNewPhoto(window.names, window.messages, window.descriptions, window.photos);
+  var photosArray = window.data.addNewPhoto(window.data.names, window.data.messages, window.data.descriptions, window.data.photos);
   var photoTemplate = document.querySelector('#picture').content;
   var photoList = document.querySelector('.pictures');
   var socialComments = document.querySelector('.social__comments');
@@ -39,7 +39,7 @@
 
   photoList.appendChild(fragment);
 
-  var firstPhoto = window.photos[0];
+  var firstPhoto = window.data.photos[0];
   bigPictureTagImg.src = firstPhoto.url;
   likesCount.textContent = firstPhoto.likes;
   commentsCount.textContent = firstPhoto.comments.length;
