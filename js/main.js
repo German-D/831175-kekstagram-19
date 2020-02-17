@@ -3,33 +3,12 @@
 var i;
 var photos = [];
 
-var dom = {
-  bigPicture: document.querySelector('.big-picture'),
-  bigPictureImg: document.querySelector('.big-picture__img'),
-  bigPictureTagImg: document.querySelector('.big-picture__img img'),
-  socialCommentCount: document.querySelector('.social__comment-count'),
-  commentsLoader: document.querySelector('.comments-loader'),
-  likesCount: document.querySelector('.likes-count'),
-  commentsCount: document.querySelector('.comments-count'),
-  socialComments: document.querySelector('.social__comments'),
-  socialCaption: document.querySelector('.social__caption'),
-  uploadFile: document.querySelector('#upload-file'),
-  imgUploadOverlay: document.querySelector('.img-upload__overlay'),
-  imgUploadCancel: document.querySelector('.img-upload__cancel'),
-  textHashtags: document.querySelector('.text__hashtags'),
-  effectLevelPin: document.querySelector('.effect-level__pin'),
-  effectLevelLine: document.querySelector('.effect-level__line'),
-  effectsList: document.querySelector('.effects__list'),
-  imgUploadSubmit: document.querySelector('.img-upload__submit'),
-  pictures: document.querySelector('.pictures'),
-  bigPictureCancel: document.querySelector('.big-picture__cancel'),
-  socialFooterText: document.querySelector('.social__footer-text'),
-  socialFooterBtn: document.querySelector('.social__footer-btn')
-};
+var effectsList = document.querySelector('.effects__list');
+var pictures = document.querySelector('.pictures');
+var bigPictureCancel = document.querySelector('.big-picture__cancel');
+var socialFooterText = document.querySelector('.social__footer-text');
 
 document.querySelector('body').classList.add('modal-open');
-dom.socialCommentCount.classList.add('hidden'); // Прячу блоки счётчика комментариев
-dom.commentsLoader.classList.add('hidden'); // и загрузки новых комментариев
 
 var names = [
   'German',
@@ -56,7 +35,7 @@ var names = [
   'Carl',
   'Igor',
   'David',
-  'Gena'
+  'Gena',
 ];
 
 var descriptions = [
@@ -65,7 +44,7 @@ var descriptions = [
   'logo',
   'spinner',
   'nice photo',
-  'insta photo'
+  'insta photo',
 ];
 
 var messages = [
@@ -74,10 +53,11 @@ var messages = [
   'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.',
   'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.',
   'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
-  'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
+  'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!',
 ];
 
 /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+
 // Функция получения случайного целого числа в заданном интервале. Максимум и минимум включаются
 function getRandomIntInclusive(min, max) {
   min = Math.ceil(min);
@@ -86,6 +66,7 @@ function getRandomIntInclusive(min, max) {
 }
 
 /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+
 // Функция поиска случайного элемента в массиве
 function getRandomElement(array) {
   var getRandomElementPosition = getRandomIntInclusive(0, array.length - 1);
@@ -93,6 +74,7 @@ function getRandomElement(array) {
 }
 
 /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+
 // Функция для создания описания одной фотографии
 function addNewMessage(messageList) {
   var newMessage;
@@ -106,6 +88,7 @@ function addNewMessage(messageList) {
 }
 
 /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+
 // Функция для создания комментария к одной фотографии
 function addNewComment(messagesArray, namesArray) {
   var comments = [];
@@ -115,13 +98,14 @@ function addNewComment(messagesArray, namesArray) {
     comments.push({
       avatar: 'img/avatar-' + tmp + '.svg',
       message: addNewMessage(messagesArray),
-      name: namesArray[getRandomIntInclusive(0, names.length)]
+      name: namesArray[getRandomIntInclusive(0, names.length)],
     });
   }
   return comments;
 }
 
 /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+
 // Функция для создания одной новой фотографии
 function addNewPhoto(namesArray, messagesArray, descriptionsArray, mainArray) {
   var photosCount = 25;
@@ -139,14 +123,24 @@ function addNewPhoto(namesArray, messagesArray, descriptionsArray, mainArray) {
       url: 'photos/' + tmpArray[0] + '.jpg',
       description: descriptionArrayRandomElement,
       likes: getRandomIntInclusive(15, 200),
-      comments: addNewComment(messagesArray, namesArray)
+      comments: addNewComment(messagesArray, namesArray),
     });
   }
   return mainArray;
 }
 
 /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+
 // Отрисовываю все фотографии в доме
+var socialCommentCount = document.querySelector('.social__comment-count');
+var commentsLoader = document.querySelector('.comments-loader');
+var likesCount = document.querySelector('.likes-count');
+var commentsCount = document.querySelector('.comments-count');
+var socialCaption = document.querySelector('.social__caption');
+
+socialCommentCount.classList.add('hidden'); // Прячу блоки счётчика комментариев
+commentsLoader.classList.add('hidden'); // и загрузки новых комментариев
+
 function renderPhoto(photosElement, templateElement, k) {
   var photoElement = templateElement.cloneNode(true);
 
@@ -157,10 +151,12 @@ function renderPhoto(photosElement, templateElement, k) {
 
   return photoElement;
 }
-
+var bigPictureTagImg = document.querySelector('.big-picture__img img');
 var photosArray = addNewPhoto(names, messages, descriptions, photos);
 var photoTemplate = document.querySelector('#picture').content;
 var photoList = document.querySelector('.pictures');
+var socialComments = document.querySelector('.social__comments');
+
 
 var fragment = document.createDocumentFragment();
 for (i = 0; i < photosArray.length; i++) {
@@ -170,10 +166,10 @@ for (i = 0; i < photosArray.length; i++) {
 photoList.appendChild(fragment);
 
 var firstPhoto = photos[0];
-dom.bigPictureTagImg.src = firstPhoto.url;
-dom.likesCount.textContent = firstPhoto.likes;
-dom.commentsCount.textContent = firstPhoto.comments.length;
-dom.socialCaption.textContent = firstPhoto.description;
+bigPictureTagImg.src = firstPhoto.url;
+likesCount.textContent = firstPhoto.likes;
+commentsCount.textContent = firstPhoto.comments.length;
+socialCaption.textContent = firstPhoto.description;
 
 // В задании поросят отрисовать cписок комментариев под фотографией
 // В верстке есть два li. Кол-во комментариев до 10, задаётся в функции addNewComment
@@ -181,14 +177,14 @@ dom.socialCaption.textContent = firstPhoto.description;
 // Если комментарий один, то меняю знавчения в первом li, а во втором останутся дефолтные.
 // Если комментариев больше одного, то меняю описание обоих li на первые два
 if (firstPhoto.comments.length === 1) {
-  dom.socialComments.querySelector('.social__picture').src = firstPhoto.comments[0].avatar;
-  dom.socialComments.querySelector('.social__picture').alt = firstPhoto.comments[0].name;
-  dom.socialComments.querySelector('.social__text').textContent = firstPhoto.comments[0].message;
+  socialComments.querySelector('.social__picture').src = firstPhoto.comments[0].avatar;
+  socialComments.querySelector('.social__picture').alt = firstPhoto.comments[0].name;
+  socialComments.querySelector('.social__text').textContent = firstPhoto.comments[0].message;
 } else {
   for (i = 0; i < 2; i++) {
 
-    var firstComment = dom.socialComments.querySelectorAll('li')[0]; // выбираю первый li
-    var secondComment = dom.socialComments.querySelectorAll('li')[1]; // выбираю второй li
+    var firstComment = socialComments.querySelectorAll('li')[0]; // выбираю первый li
+    var secondComment = socialComments.querySelectorAll('li')[1]; // выбираю второй li
 
     firstComment.querySelector('.social__picture').src = firstPhoto.comments[0].avatar;
     firstComment.querySelector('.social__picture').alt = firstPhoto.comments[0].name;
@@ -202,17 +198,22 @@ if (firstPhoto.comments.length === 1) {
 
 /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
 // Показываю форму обработки фото при загрузке изображения
+var uploadFile = document.querySelector('#upload-file');
+var imgUploadOverlay = document.querySelector('.img-upload__overlay');
+
 var uploadFileChangeHandler = function () {
-  dom.imgUploadOverlay.classList.remove('hidden');
+  imgUploadOverlay.classList.remove('hidden');
 };
 
-dom.uploadFile.addEventListener('change', uploadFileChangeHandler);
+uploadFile.addEventListener('change', uploadFileChangeHandler);
 
 /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
 // Закрытие формы эффектов фото по крестику
+var imgUploadCancel = document.querySelector('.img-upload__cancel');
+
 var imgUploadCancelClickHandler = function () {
-  dom.imgUploadOverlay.classList.add('hidden');
-  dom.uploadFile.value = '';
+  imgUploadOverlay.classList.add('hidden');
+  uploadFile.value = '';
 };
 
 var documentKeydownHandler = function (evt) {
@@ -225,33 +226,40 @@ var documentKeydownHandler = function (evt) {
   }
 };
 
-dom.imgUploadCancel.addEventListener('click', imgUploadCancelClickHandler);
+imgUploadCancel.addEventListener('click', imgUploadCancelClickHandler);
 document.addEventListener('keydown', documentKeydownHandler); // Закрытие формы по Esc
 
 /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
 // Не закрываю форму нового изображения по Esc на инпуте хэштегов
+var textHashtags = document.querySelector('.text__hashtags');
+
 var textHashtagsKeydownhandler = function (evt) {
   if (evt.key === 'Escape') {
     evt.stopPropagation();
   }
 };
 
-dom.textHashtags.addEventListener('keydown', textHashtagsKeydownhandler);
+textHashtags.addEventListener('keydown', textHashtagsKeydownhandler);
 
 /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
 // Определяю прогресс пина
+var effectLevelPin = document.querySelector('.effect-level__pin');
+
 var effectLevelPinMouseupHandler = function () {
   calculatePinProgress();
 };
 
-dom.effectLevelPin.addEventListener('mouseup', effectLevelPinMouseupHandler);
+effectLevelPin.addEventListener('mouseup', effectLevelPinMouseupHandler);
 
 /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
 // Обнуляю значение прогресса пина
 var calculatePinProgress = function () {
-  var coordinateLineX = dom.effectLevelLine.getBoundingClientRect().x;
-  var coordinatePinX = dom.effectLevelPin.getBoundingClientRect().x;
-  var lineLength = dom.effectLevelLine.clientWidth;
+  var effectLevelLine = document.querySelector('.effect-level__line');
+
+
+  var coordinateLineX = effectLevelLine.getBoundingClientRect().x;
+  var coordinatePinX = effectLevelPin.getBoundingClientRect().x;
+  var lineLength = effectLevelLine.clientWidth;
   var pinProgress = Math.round(100 * (coordinatePinX - coordinateLineX) / lineLength);
   return pinProgress;
 };
@@ -263,12 +271,12 @@ var effectsListClickHandler = function (evt) {
   }
 };
 
-dom.effectsList.addEventListener('click', effectsListClickHandler);
+effectsList.addEventListener('click', effectsListClickHandler);
 
 /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
 // Валидация инпута ввода хэштегов
 var textHashtagsInputhandler = function () {
-  var hashtagsValue = dom.textHashtags.value;
+  var hashtagsValue = textHashtags.value;
   var hashtagsArray = hashtagsValue.split(/\s+/);
   var RegExpHashtags = /^#[a-zA-Z0-9а-яА-Я]{1,19}$/i;
 
@@ -287,40 +295,41 @@ var textHashtagsInputhandler = function () {
 
   for (i = 0; i < hashtagsArray.length; i++) {
     if (!RegExpHashtags.test(hashtagsArray[i])) { // Проверка на регулярку
-      dom.textHashtags.setCustomValidity('Хэштег начинается с #, не содержит спецсимволы и не может состоять из #');
+      textHashtags.setCustomValidity('Хэштег начинается с #, не содержит спецсимволы и не может состоять из #');
       return;
     }
 
     if (hashtagsArray.length > 5) { // Максимум 5 хэштегов
-      dom.textHashtags.setCustomValidity('Нельзя указывать больше 5 хэштегов');
+      textHashtags.setCustomValidity('Нельзя указывать больше 5 хэштегов');
       return;
     }
 
     if (hashtagsArray.length > uniqueHashtagsArray.length) { // Один и тот же хэштег не модет быть использолван дважды
-      dom.textHashtags.setCustomValidity('Нельзя указать одинаковые хэштеги');
+      textHashtags.setCustomValidity('Нельзя указать одинаковые хэштеги');
       return;
     }
-    dom.textHashtags.setCustomValidity('');
+    textHashtags.setCustomValidity('');
   }
 };
 
-dom.textHashtags.addEventListener('input', textHashtagsInputhandler);
+textHashtags.addEventListener('input', textHashtagsInputhandler);
 
 /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
 // Клик по контейнеру c фотографиями
+var bigPicture = document.querySelector('.big-picture');
 var picturesClickHandler = function (evt) {
   var getBigImg = function (smallPicture) {
-    dom.bigPicture.querySelector('img').src = smallPicture.url;
-    dom.bigPicture.querySelector('.likes-count').textContent = smallPicture.likes;
-    dom.bigPicture.querySelector('.social__caption').textContent = smallPicture.description;
-    dom.bigPicture.querySelectorAll('.social__text')[0].textContent = smallPicture.comments[0].message;
-    dom.bigPicture.querySelectorAll('.social__picture')[0].src = smallPicture.comments[0].avatar;
+    bigPicture.querySelector('img').src = smallPicture.url;
+    bigPicture.querySelector('.likes-count').textContent = smallPicture.likes;
+    bigPicture.querySelector('.social__caption').textContent = smallPicture.description;
+    bigPicture.querySelectorAll('.social__text')[0].textContent = smallPicture.comments[0].message;
+    bigPicture.querySelectorAll('.social__picture')[0].src = smallPicture.comments[0].avatar;
 
     if (smallPicture.comments.length > 1) {
-      dom.bigPicture.querySelectorAll('.social__text')[1].textContent = smallPicture.comments[1].message;
-      dom.bigPicture.querySelectorAll('.social__picture')[1].src = smallPicture.comments[1].avatar;
+      bigPicture.querySelectorAll('.social__text')[1].textContent = smallPicture.comments[1].message;
+      bigPicture.querySelectorAll('.social__picture')[1].src = smallPicture.comments[1].avatar;
     }
-    dom.bigPicture.classList.remove('hidden');
+    bigPicture.classList.remove('hidden');
   };
 
   // Если клик был клавишой Ентер
@@ -337,29 +346,29 @@ var picturesClickHandler = function (evt) {
   }
 };
 
-dom.pictures.addEventListener('click', picturesClickHandler);
+pictures.addEventListener('click', picturesClickHandler);
 
 /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
 // Закрытие большого фото
 var bigPictureCancelClickHandler = function () {
-  dom.bigPicture.classList.add('hidden');
-  dom.socialFooterText.value = '';
+  bigPicture.classList.add('hidden');
+  socialFooterText.value = '';
 };
 
-dom.bigPictureCancel.addEventListener('click', bigPictureCancelClickHandler);
+bigPictureCancel.addEventListener('click', bigPictureCancelClickHandler);
 
 /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
 // Валидация комментария
 var socialFooterTextInputHandler = function (evt) {
   var socialFooterTextValue = evt.target.value;
   if (socialFooterTextValue.length > 140) {
-    dom.socialFooterText.setCustomValidity('Длина комментария не должна привышать 140 символов');
+    socialFooterText.setCustomValidity('Длина комментария не должна привышать 140 символов');
     return;
   }
-  dom.socialFooterText.setCustomValidity('');
+  socialFooterText.setCustomValidity('');
 };
 
-dom.socialFooterText.addEventListener('input', socialFooterTextInputHandler);
+socialFooterText.addEventListener('input', socialFooterTextInputHandler);
 
 /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
 // Не закрываю форму по Enter
@@ -369,4 +378,4 @@ var socialFooterTextKeydownHandler = function (evt) {
   }
 };
 
-dom.socialFooterText.addEventListener('keydown', socialFooterTextKeydownHandler);
+socialFooterText.addEventListener('keydown', socialFooterTextKeydownHandler);
