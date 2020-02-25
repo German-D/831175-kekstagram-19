@@ -100,7 +100,6 @@
   /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
 
   // Функция для создания одной новой фотографии
-  var photos = [];
 
   function addNewPhoto(namesArray, messagesArray, descriptionsArray, mainArray) {
     var photosCount = 25;
@@ -128,7 +127,7 @@
     names: names,
     descriptions: descriptions,
     messages: messages,
-    photos: photos,
+    photos: [],
     addNewPhoto: addNewPhoto
   };
 

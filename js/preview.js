@@ -3,32 +3,33 @@
   /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
 // Клик по контейнеру c фотографиями
   var bigPicture = document.querySelector('.big-picture');
+
+  var getBigImg = function (smallPicture, element) {
+    element.querySelector('img').src = smallPicture.url;
+    element.querySelector('.likes-count').textContent = smallPicture.likes;
+    element.querySelector('.social__caption').textContent = smallPicture.description;
+    element.querySelectorAll('.social__text')[0].textContent = smallPicture.comments[0].message;
+    element.querySelectorAll('.social__picture')[0].src = smallPicture.comments[0].avatar;
+
+    if (smallPicture.comments.length > 1) {
+      element.querySelectorAll('.social__text')[1].textContent = smallPicture.comments[1].message;
+      element.querySelectorAll('.social__picture')[1].src = smallPicture.comments[1].avatar;
+    }
+    element.classList.remove('hidden');
+  };
+
   var picturesClickHandler = function (evt) {
-    var getBigImg = function (smallPicture) {
-      bigPicture.querySelector('img').src = smallPicture.url;
-      bigPicture.querySelector('.likes-count').textContent = smallPicture.likes;
-      bigPicture.querySelector('.social__caption').textContent = smallPicture.description;
-      bigPicture.querySelectorAll('.social__text')[0].textContent = smallPicture.comments[0].message;
-      bigPicture.querySelectorAll('.social__picture')[0].src = smallPicture.comments[0].avatar;
-
-      if (smallPicture.comments.length > 1) {
-        bigPicture.querySelectorAll('.social__text')[1].textContent = smallPicture.comments[1].message;
-        bigPicture.querySelectorAll('.social__picture')[1].src = smallPicture.comments[1].avatar;
-      }
-      bigPicture.classList.remove('hidden');
-    };
-
     // Если клик был клавишой Ентер
     if (evt.target.classList.contains('picture')) {
-      var photoInfo1 = window.data.photos[evt.target.querySelector('.picture__img').dataset.id];
-      getBigImg(photoInfo1);
+      var photoInfoEnter = window.data.photos[evt.target.querySelector('.picture__img').dataset.id];
+      getBigImg(photoInfoEnter, bigPicture);
       return;
     }
 
     // Если клик был мышкой
     if (evt.target.classList.contains('picture__img')) {
       var photoInfo = window.data.photos[evt.target.dataset.id];
-      getBigImg(photoInfo);
+      getBigImg(photoInfo, bigPicture);
     }
   };
   var pictures = document.querySelector('.pictures');
@@ -74,7 +75,7 @@
 
   window.preview = {
     bigPictureCancelClickHandler: bigPictureCancelClickHandler,
-    picturesClickHandler: picturesClickHandler
+    picturesClickHandler: picturesClickHandler,
   };
 
 })();

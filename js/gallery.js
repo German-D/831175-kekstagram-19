@@ -47,26 +47,17 @@
 
   // В задании поросят отрисовать cписок комментариев под фотографией
   // В верстке есть два li. Кол-во комментариев до 10, задаётся в функции addNewComment
-  // Решил сделать логику:
-  // Если комментарий один, то меняю знавчения в первом li, а во втором останутся дефолтные.
-  // Если комментариев больше одного, то меняю описание обоих li на первые два
-  if (firstPhoto.comments.length === 1) {
-    socialComments.querySelector('.social__picture').src = firstPhoto.comments[0].avatar;
-    socialComments.querySelector('.social__picture').alt = firstPhoto.comments[0].name;
-    socialComments.querySelector('.social__text').textContent = firstPhoto.comments[0].message;
-  } else {
-    for (var n = 0; n < 2; n++) {
+  for (var n = 0; n < firstPhoto.comments.length; n++) {
 
-      var firstComment = socialComments.querySelectorAll('li')[0]; // выбираю первый li
-      var secondComment = socialComments.querySelectorAll('li')[1]; // выбираю второй li
+    var firstComment = socialComments.querySelectorAll('li')[0]; // выбираю первый li
+    var secondComment = socialComments.querySelectorAll('li')[1]; // выбираю второй li
 
-      firstComment.querySelector('.social__picture').src = firstPhoto.comments[0].avatar;
-      firstComment.querySelector('.social__picture').alt = firstPhoto.comments[0].name;
-      firstComment.querySelector('.social__text').textContent = firstPhoto.comments[0].message;
+    firstComment.querySelector('.social__picture').src = firstPhoto.comments[0].avatar;
+    firstComment.querySelector('.social__picture').alt = firstPhoto.comments[0].name;
+    firstComment.querySelector('.social__text').textContent = firstPhoto.comments[0].message;
 
-      secondComment.querySelector('.social__picture').src = firstPhoto.comments[1].avatar;
-      secondComment.querySelector('.social__picture').alt = firstPhoto.comments[1].name;
-      secondComment.querySelector('.social__text').textContent = firstPhoto.comments[1].message;
-    }
+    secondComment.querySelector('.social__picture').src = firstPhoto.comments[1].avatar;
+    secondComment.querySelector('.social__picture').alt = firstPhoto.comments[1].name;
+    secondComment.querySelector('.social__text').textContent = firstPhoto.comments[1].message;
   }
 })();
