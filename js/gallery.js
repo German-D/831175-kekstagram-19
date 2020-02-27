@@ -47,17 +47,12 @@
 
   // В задании поросят отрисовать cписок комментариев под фотографией
   // В верстке есть два li. Кол-во комментариев до 10, задаётся в функции addNewComment
-  for (var n = 0; n < firstPhoto.comments.length; n++) {
+  var iterations = Math.min(2, firstPhoto.comments.length);
+  var elementLi = socialComments.querySelectorAll('li');
 
-    var firstComment = socialComments.querySelectorAll('li')[0]; // выбираю первый li
-    var secondComment = socialComments.querySelectorAll('li')[1]; // выбираю второй li
-
-    firstComment.querySelector('.social__picture').src = firstPhoto.comments[0].avatar;
-    firstComment.querySelector('.social__picture').alt = firstPhoto.comments[0].name;
-    firstComment.querySelector('.social__text').textContent = firstPhoto.comments[0].message;
-
-    secondComment.querySelector('.social__picture').src = firstPhoto.comments[1].avatar;
-    secondComment.querySelector('.social__picture').alt = firstPhoto.comments[1].name;
-    secondComment.querySelector('.social__text').textContent = firstPhoto.comments[1].message;
+  for (var n = 0; n < iterations; n++) {
+    elementLi[n].querySelector('.social__picture').src = firstPhoto.comments[n].avatar;
+    elementLi[n].querySelector('.social__picture').alt = firstPhoto.comments[n].name;
+    elementLi[n].querySelector('.social__text').textContent = firstPhoto.comments[n].message;
   }
 })();

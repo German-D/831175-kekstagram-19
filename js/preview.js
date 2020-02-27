@@ -18,20 +18,20 @@
     element.classList.remove('hidden');
   };
 
+  // Обрабатываю клик мышки и ентера на маленькой фотографии
   var picturesClickHandler = function (evt) {
-    // Если клик был клавишой Ентер
-    if (evt.target.classList.contains('picture')) {
-      var photoInfoEnter = window.data.photos[evt.target.querySelector('.picture__img').dataset.id];
-      getBigImg(photoInfoEnter, bigPicture);
+    var domPicture = evt.target.closest('.picture');
+
+    if (!domPicture) {
       return;
     }
 
-    // Если клик был мышкой
-    if (evt.target.classList.contains('picture__img')) {
-      var photoInfo = window.data.photos[evt.target.dataset.id];
-      getBigImg(photoInfo, bigPicture);
-    }
+    var pictureImg = domPicture.querySelector('.picture__img');
+    var pictureId = pictureImg.dataset.id;
+    var photoInfo = window.data.photos[pictureId];
+    getBigImg(photoInfo, bigPicture);
   };
+
   var pictures = document.querySelector('.pictures');
 
   pictures.addEventListener('click', picturesClickHandler);
