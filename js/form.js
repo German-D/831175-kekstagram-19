@@ -48,9 +48,8 @@
 
   /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
   // Обнуляю значение прогресса пина
+  var effectLevelLine = document.querySelector('.effect-level__line');
   var calculatePinProgress = function () {
-    var effectLevelLine = document.querySelector('.effect-level__line');
-
 
     var coordinateLineX = effectLevelLine.getBoundingClientRect().x;
     var coordinatePinX = effectLevelPin.getBoundingClientRect().x;
@@ -77,7 +76,57 @@
     calculatePinProgress();
   };
 
+  var effectLevelPinMousedownHandler = function (evt) {
+    evt.preventDefault();
+
+    var startCoords = {
+      x: evt.clientX,
+    };
+
+    var levelLineElement = document.querySelector('.effect-level__line');
+    var levelLineElementLeft = levelLineElement.getBoundingClientRect().x;
+    var levelLineElementRight = levelLineElementLeft + levelLineElement.getBoundingClientRect().width;
+    var effectLevelDepth = document.querySelector('.effect-level__depth');
+
+    var documentMouseMovehandler = function (moveEvt) {
+      moveEvt.preventDefault();
+
+      var shift = {
+        x: startCoords.x - moveEvt.clientX,
+      };
+
+      var offsetLeft = effectLevelPin.offsetLeft;
+
+      startCoords = {
+        x: moveEvt.clientX
+      };
+
+      if (moveEvt.clientX >= levelLineElementRight) {
+        return;
+      }
+
+      if (moveEvt.clientX <= levelLineElementLeft) {
+        return;
+      }
+
+      var newWidth = (offsetLeft - shift.x) + 'px';
+      effectLevelPin.style.left = newWidth;
+      effectLevelDepth.style.width = newWidth;
+    };
+
+    var documentMouseUpHandler = function () {
+
+      document.removeEventListener('mousemove', documentMouseMovehandler);
+      document.removeEventListener('mouseup', documentMouseUpHandler);
+    };
+
+    document.addEventListener('mousemove', documentMouseMovehandler);
+    document.addEventListener('mouseup', documentMouseUpHandler);
+
+  };
+
   effectLevelPin.addEventListener('mouseup', effectLevelPinMouseupHandler);
+  effectLevelPin.addEventListener('mousedown', effectLevelPinMousedownHandler);
 
   /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
   // Валидация инпута ввода хэштегов
