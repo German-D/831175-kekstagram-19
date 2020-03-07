@@ -47,7 +47,8 @@
   textHashtags.addEventListener('keydown', textHashtagsKeydownhandler);
 
   /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
-  // Обнуляю значение прогресса пина
+  // Вычисляю значение прогресса пина
+  var effectLevelPin = document.querySelector('.effect-level__pin');
   var effectLevelLine = document.querySelector('.effect-level__line');
   var calculatePinProgress = function () {
 
@@ -55,26 +56,39 @@
     var coordinatePinX = effectLevelPin.getBoundingClientRect().x;
     var lineLength = effectLevelLine.clientWidth;
     var pinProgress = Math.round(100 * (coordinatePinX - coordinateLineX) / lineLength);
+    // console.log(pinProgress);
     return pinProgress;
   };
 
-  /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ */
-  var effectsList = document.querySelector('.effects__list');
-  var effectsListClickHandler = function (evt) {
-    if (evt.target.tagName !== 'LABEL') {
-      calculatePinProgress();
+  /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+  // Меняю эффект большой картинки в зависимости от класса при передвижении Пина
+  var effectLevelPinMouseupHandler = function () {
+    var effectProgress = calculatePinProgress();
+    var proportionValue = effectProgress / 100;
+    if (mainImg.classList.contains('effects__preview--chrome')) {
+      mainImg.style.filter = 'grayscale(' + proportionValue + ')';
+    }
+
+    if (mainImg.classList.contains('effects__preview--sepia')) {
+      proportionValue = effectProgress / 100;
+      mainImg.style.filter = 'sepia(' + proportionValue + ')';
+    }
+
+    if (mainImg.classList.contains('effects__preview--marvin')) {
+      mainImg.style.filter = 'invert(' + effectProgress + '%)';
+    }
+
+    if (mainImg.classList.contains('effects__preview--phobos')) {
+      proportionValue = effectProgress * 3 / 100;
+      mainImg.style.filter = 'blur(' + proportionValue + 'px)';
+    }
+
+    if (mainImg.classList.contains('effects__preview--heat')) {
+      proportionValue = effectProgress * 2 / 100 + 1;
+      mainImg.style.filter = 'brightness(' + proportionValue + ')';
     }
   };
-
-  effectsList.addEventListener('click', effectsListClickHandler);
-
-  /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
-  // Определяю прогресс пина
-  var effectLevelPin = document.querySelector('.effect-level__pin');
-
-  var effectLevelPinMouseupHandler = function () {
-    calculatePinProgress();
-  };
+  var effectLevelDepth = document.querySelector('.effect-level__depth');
 
   var effectLevelPinMousedownHandler = function (evt) {
     evt.preventDefault();
@@ -86,7 +100,6 @@
     var levelLineElement = document.querySelector('.effect-level__line');
     var levelLineElementLeft = levelLineElement.getBoundingClientRect().x;
     var levelLineElementRight = levelLineElementLeft + levelLineElement.getBoundingClientRect().width;
-    var effectLevelDepth = document.querySelector('.effect-level__depth');
 
     var documentMouseMovehandler = function (moveEvt) {
       moveEvt.preventDefault();
@@ -98,7 +111,7 @@
       var offsetLeft = effectLevelPin.offsetLeft;
 
       startCoords = {
-        x: moveEvt.clientX
+        x: moveEvt.clientX,
       };
 
       if (moveEvt.clientX >= levelLineElementRight) {
@@ -168,4 +181,35 @@
   };
 
   textHashtags.addEventListener('input', textHashtagsInputhandler);
+
+  /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+  // Обрабатываю клик по фильтру
+  var allFilters = document.querySelectorAll('.effects__radio');
+  var mainImgWrapper = document.querySelector('.img-upload__preview');
+  var mainImg = mainImgWrapper.querySelector('img');
+  var effectLine = document.querySelector('.img-upload__effect-level');
+
+  var allFiltersOnchangeHandler = function (evt) {
+    var effect = evt.target.value;
+    var className = 'effects__preview--' + effect;
+
+    mainImg.className = '';
+    mainImg.style.filter = '';
+    // Обнуляю пин и полосу прогресса
+    effectLevelPin.style.left = 448 + 'px';
+    effectLevelDepth.style.width = 448 + 'px';
+
+    // Логика скрытия слайдера
+    if (evt.target.id !== 'effect-none') {
+      effectLine.classList.remove('visually-hidden');
+    } else {
+      effectLine.classList.add('visually-hidden');
+    }
+    // Логика добавления css стиля
+    mainImg.classList.add(className);
+  };
+
+  for (var j = 0; j < allFilters.length; j++) {
+    allFilters[j].addEventListener('change', allFiltersOnchangeHandler);
+  }
 })();
