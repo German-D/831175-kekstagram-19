@@ -61,103 +61,121 @@
   };
 
   /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
-  // Меняю эффект большой картинки в зависимости от класса при передвижении Пина
-  var effectLevelPinMouseupHandler = function () {
-    var effectProgress = calculatePinProgress();
-    var proportionValue = effectProgress / 100;
-    if (mainImg.classList.contains('effects__preview--chrome')) {
-      mainImg.style.filter = 'grayscale(' + proportionValue + ')';
-    }
-
-    if (mainImg.classList.contains('effects__preview--sepia')) {
-      proportionValue = effectProgress / 100;
-      mainImg.style.filter = 'sepia(' + proportionValue + ')';
-    }
-
-    if (mainImg.classList.contains('effects__preview--marvin')) {
-      mainImg.style.filter = 'invert(' + effectProgress + '%)';
-    }
-
-    if (mainImg.classList.contains('effects__preview--phobos')) {
-      proportionValue = effectProgress * 3 / 100;
-      mainImg.style.filter = 'blur(' + proportionValue + 'px)';
-    }
-
-    if (mainImg.classList.contains('effects__preview--heat')) {
-      proportionValue = effectProgress * 2 / 100 + 1;
-      mainImg.style.filter = 'brightness(' + proportionValue + ')';
-    }
-  };
   var effectLevelDepth = document.querySelector('.effect-level__depth');
 
   var effectLevelPinMousedownHandler = function (evt) {
     evt.preventDefault();
 
-    var startCoords = {
-      x: evt.clientX,
-    };
+    var shiftX = evt.clientX - effectLevelPin.getBoundingClientRect().left;
 
-    var levelLineElement = document.querySelector('.effect-level__line');
-    var levelLineElementLeft = levelLineElement.getBoundingClientRect().x;
-    var levelLineElementRight = levelLineElementLeft + levelLineElement.getBoundingClientRect().width;
-
-    var documentMouseMovehandler = function (moveEvt) {
+    var documentMouseMoveHandler = function (moveEvt) {
       moveEvt.preventDefault();
 
-      var shift = {
-        x: startCoords.x - moveEvt.clientX,
-      };
+      var newLeft = moveEvt.clientX - shiftX - effectLevelLine.getBoundingClientRect().left;
 
-      var offsetLeft = effectLevelPin.offsetLeft;
-
-      startCoords = {
-        x: moveEvt.clientX,
-      };
-
-      if (moveEvt.clientX >= levelLineElementRight) {
-        return;
+      // курсор вышел из слайдера => оставить бегунок в его границах.
+      if (newLeft < 0) {
+        newLeft = 0;
       }
 
-      if (moveEvt.clientX <= levelLineElementLeft) {
-        return;
+      var rightEdge = effectLevelLine.offsetWidth - effectLevelPin.offsetWidth / 2;
+
+      if (newLeft > rightEdge) {
+        newLeft = rightEdge;
       }
 
-      var newWidth = (offsetLeft - shift.x) + 'px';
-      effectLevelPin.style.left = newWidth;
-      effectLevelDepth.style.width = newWidth;
+      effectLevelPin.style.left = newLeft + effectLevelPin.offsetWidth / 2 + 'px';
+      effectLevelDepth.style.width = newLeft + 'px';
+
+      // Меняю эффект большой картинки в зависимости от класса при передвижении Пина
+      var effectProgress = calculatePinProgress();
+
+      // Все варианты эффектов + пропорции эффекта
+      var options = {
+        'effects__preview--chrome': {
+          effect: 'grayscale',
+          proportionValue: function (progress) {
+            return progress / 100;
+          },
+        },
+        'effects__preview--sepia': {
+          effect: 'sepia',
+          proportionValue: function (progress) {
+            return progress / 100;
+          },
+        },
+        'effects__preview--marvin': {
+          effect: 'invert',
+        },
+        'effects__preview--phobos': {
+          effect: 'blur',
+          proportionValue: function (progress) {
+            return progress * 3 / 100;
+          },
+        },
+        'effects__preview--heat': {
+          effect: 'brightness',
+          proportionValue: function (progress) {
+            return progress * 2 / 100 + 1;
+          },
+        },
+
+      };
+
+      if (mainImg.classList.contains('effects__preview--chrome')) {
+        mainImg.style.filter = options['effects__preview--chrome'].effect + '(' + options['effects__preview--chrome'].proportionValue(effectProgress) + ')';
+      }
+
+      if (mainImg.classList.contains('effects__preview--sepia')) {
+        mainImg.style.filter = options['effects__preview--sepia'].effect + '(' + options['effects__preview--sepia'].proportionValue(effectProgress) + ')';
+      }
+
+      if (mainImg.classList.contains('effects__preview--marvin')) {
+        mainImg.style.filter = options['effects__preview--marvin'].effect + '(' + effectProgress + '%)';
+      }
+
+      if (mainImg.classList.contains('effects__preview--phobos')) {
+        mainImg.style.filter = options['effects__preview--phobos'].effect + '(' + options['effects__preview--phobos'].proportionValue(effectProgress) + 'px)';
+
+      } else {
+        mainImg.style.filter = options['effects__preview--heat'].effect + '(' + options['effects__preview--heat'].proportionValue(effectProgress) + ')';
+      }
     };
 
     var documentMouseUpHandler = function () {
 
-      document.removeEventListener('mousemove', documentMouseMovehandler);
+      document.removeEventListener('mousemove', documentMouseMoveHandler);
       document.removeEventListener('mouseup', documentMouseUpHandler);
     };
 
-    document.addEventListener('mousemove', documentMouseMovehandler);
+    document.addEventListener('mousemove', documentMouseMoveHandler);
     document.addEventListener('mouseup', documentMouseUpHandler);
-
   };
 
-  effectLevelPin.addEventListener('mouseup', effectLevelPinMouseupHandler);
+  effectLevelPin.ondragstart = function () {
+    return false;
+  };
+
   effectLevelPin.addEventListener('mousedown', effectLevelPinMousedownHandler);
 
   /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
+  // создаю массив только с уникальными значениями
+  var getUniqueArray = function (array) {
+    var uniqueArray = [];
+    for (var y = 0; y < array.length; y++) {
+      var arrayLowCase = array[y].toLowerCase();
+      if (!uniqueArray.includes(arrayLowCase)) {
+        uniqueArray.push(arrayLowCase);
+      }
+    }
+    return uniqueArray;
+  };
+
   // Валидация инпута ввода хэштегов
-  var textHashtagsInputhandler = function () {
-    var hashtagsValue = textHashtags.value;
+  var textHashtagsInputhandler = function (evt) {
+    var hashtagsValue = evt.target.value;
     var hashtagsArray = hashtagsValue.split(/\s+/);
     var RegExpHashtags = /^#[a-zA-Z0-9а-яА-Я]{1,19}$/i;
-
-    var getUniqueArray = function (array) { // создаю массив только с уникальными значениями
-      var uniqueArray = [];
-      for (var y = 0; y < array.length; y++) {
-        var arrayLowCase = array[y].toLowerCase();
-        if (!uniqueArray.includes(arrayLowCase)) {
-          uniqueArray.push(arrayLowCase);
-        }
-      }
-      return uniqueArray;
-    };
 
     var uniqueHashtagsArray = getUniqueArray(hashtagsArray);
 
