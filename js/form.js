@@ -78,14 +78,14 @@
         newLeft = 0;
       }
 
-      var rightEdge = effectLevelLine.offsetWidth - effectLevelPin.offsetWidth / 2;
+      var rightEdge = effectLevelLine.offsetWidth - effectLevelPin.offsetWidth;
 
       if (newLeft > rightEdge) {
         newLeft = rightEdge;
       }
 
       effectLevelPin.style.left = newLeft + effectLevelPin.offsetWidth / 2 + 'px';
-      effectLevelDepth.style.width = newLeft + 'px';
+      effectLevelDepth.style.width = newLeft + effectLevelPin.offsetWidth + 'px';
 
       // Меняю эффект большой картинки в зависимости от класса при передвижении Пина
       var effectProgress = calculatePinProgress();
@@ -137,7 +137,7 @@
       if (mainImg.classList.contains('effects__preview--phobos')) {
         mainImg.style.filter = options['effects__preview--phobos'].effect + '(' + options['effects__preview--phobos'].proportionValue(effectProgress) + 'px)';
 
-      } else {
+      } else if (mainImg.classList.contains('effects__preview--heat')) {
         mainImg.style.filter = options['effects__preview--heat'].effect + '(' + options['effects__preview--heat'].proportionValue(effectProgress) + ')';
       }
     };
@@ -214,8 +214,8 @@
     mainImg.className = '';
     mainImg.style.filter = '';
     // Обнуляю пин и полосу прогресса
-    effectLevelPin.style.left = 448 + 'px';
-    effectLevelDepth.style.width = 448 + 'px';
+    effectLevelPin.style.left = effectLevelLine.offsetWidth - effectLevelPin.offsetWidth / 2 + 'px';
+    effectLevelDepth.style.width = effectLevelLine.offsetWidth - effectLevelPin.offsetWidth / 2 + 'px';
 
     // Логика скрытия слайдера
     if (evt.target.id !== 'effect-none') {
