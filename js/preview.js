@@ -50,7 +50,7 @@
   bigPictureCancel.addEventListener('click', bigPictureCancelClickHandler);
 
   /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
-  // Не закрываю форму по Enter
+  // Не закрываю форму по Esc
   var socialFooterTextKeydownHandler = function (evt) {
     if (evt.key === 'Escape') {
       evt.stopPropagation();

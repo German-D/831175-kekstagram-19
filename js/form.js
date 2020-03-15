@@ -23,8 +23,12 @@
 
   var documentKeydownHandler = function (evt) {
     if (evt.key === 'Escape') {
-      imgUploadCancelClickHandler();
-      window.preview.bigPictureCancelClickHandler();
+      if (evt.target.tagName === 'INPUT') {
+        return;
+      } else {
+        imgUploadCancelClickHandler();
+        window.preview.bigPictureCancelClickHandler();
+      }
     }
     if (evt.key === 'Enter') {
       window.preview.picturesClickHandler(evt);
@@ -39,9 +43,10 @@
   var textHashtags = document.querySelector('.text__hashtags');
 
   var textHashtagsKeydownhandler = function (evt) {
-    if (evt.key === 'Escape') {
-      evt.stopPropagation();
-    }
+    // if (evt.key === 'Escape') {
+    //   console.log(evt);
+    //   evt.stopPropagation();
+    // }
   };
 
   textHashtags.addEventListener('keydown', textHashtagsKeydownhandler);
