@@ -5,6 +5,41 @@
 // Показываю форму обработки фото при загрузке изображения
   var uploadFile = document.querySelector('#upload-file');
   var imgUploadOverlay = document.querySelector('.img-upload__overlay');
+  var currentFilter;
+
+  // Все варианты эффектов + пропорции эффекта
+  var options = {
+    'effects__preview--chrome': {
+      effect: 'grayscale',
+      proportionValue: function (progress) {
+        return progress / 100;
+      },
+    },
+    'effects__preview--sepia': {
+      effect: 'sepia',
+      proportionValue: function (progress) {
+        return progress / 100;
+      },
+    },
+    'effects__preview--marvin': {
+      effect: 'invert',
+      proportionValue: function (progress) {
+        return progress + '%';
+      },
+    },
+    'effects__preview--phobos': {
+      effect: 'blur',
+      proportionValue: function (progress) {
+        return progress * 3 / 100 + 'px';
+      },
+    },
+    'effects__preview--heat': {
+      effect: 'brightness',
+      proportionValue: function (progress) {
+        return progress * 2 / 100 + 1;
+      },
+    },
+  };
 
   var uploadFileChangeHandler = function () {
     imgUploadOverlay.classList.remove('hidden');
@@ -23,7 +58,7 @@
 
   var documentKeydownHandler = function (evt) {
     if (evt.key === 'Escape') {
-      if (evt.target.tagName === 'INPUT') {
+      if (evt.target.classList.contains('text__hashtags')) {
         return;
       } else {
         imgUploadCancelClickHandler();
@@ -37,19 +72,6 @@
 
   imgUploadCancel.addEventListener('click', imgUploadCancelClickHandler);
   document.addEventListener('keydown', documentKeydownHandler); // Закрытие формы по Esc
-
-  /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
-  // Не закрываю форму нового изображения по Esc на инпуте хэштегов
-  var textHashtags = document.querySelector('.text__hashtags');
-
-  var textHashtagsKeydownhandler = function (evt) {
-    // if (evt.key === 'Escape') {
-    //   console.log(evt);
-    //   evt.stopPropagation();
-    // }
-  };
-
-  textHashtags.addEventListener('keydown', textHashtagsKeydownhandler);
 
   /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
   // Вычисляю значение прогресса пина
@@ -95,56 +117,9 @@
       // Меняю эффект большой картинки в зависимости от класса при передвижении Пина
       var effectProgress = calculatePinProgress();
 
-      // Все варианты эффектов + пропорции эффекта
-      var options = {
-        'effects__preview--chrome': {
-          effect: 'grayscale',
-          proportionValue: function (progress) {
-            return progress / 100;
-          },
-        },
-        'effects__preview--sepia': {
-          effect: 'sepia',
-          proportionValue: function (progress) {
-            return progress / 100;
-          },
-        },
-        'effects__preview--marvin': {
-          effect: 'invert',
-        },
-        'effects__preview--phobos': {
-          effect: 'blur',
-          proportionValue: function (progress) {
-            return progress * 3 / 100;
-          },
-        },
-        'effects__preview--heat': {
-          effect: 'brightness',
-          proportionValue: function (progress) {
-            return progress * 2 / 100 + 1;
-          },
-        },
-
-      };
-
-      if (mainImg.classList.contains('effects__preview--chrome')) {
-        mainImg.style.filter = options['effects__preview--chrome'].effect + '(' + options['effects__preview--chrome'].proportionValue(effectProgress) + ')';
-      }
-
-      if (mainImg.classList.contains('effects__preview--sepia')) {
-        mainImg.style.filter = options['effects__preview--sepia'].effect + '(' + options['effects__preview--sepia'].proportionValue(effectProgress) + ')';
-      }
-
-      if (mainImg.classList.contains('effects__preview--marvin')) {
-        mainImg.style.filter = options['effects__preview--marvin'].effect + '(' + effectProgress + '%)';
-      }
-
-      if (mainImg.classList.contains('effects__preview--phobos')) {
-        mainImg.style.filter = options['effects__preview--phobos'].effect + '(' + options['effects__preview--phobos'].proportionValue(effectProgress) + 'px)';
-
-      } else if (mainImg.classList.contains('effects__preview--heat')) {
-        mainImg.style.filter = options['effects__preview--heat'].effect + '(' + options['effects__preview--heat'].proportionValue(effectProgress) + ')';
-      }
+      // Меняю знаение эффекта в зависимости от Пина
+      var currentOption = options['effects__preview--' + currentFilter];
+      mainImg.style.filter = currentOption.effect + '(' + currentOption.proportionValue(effectProgress) + ')';
     };
 
     var documentMouseUpHandler = function () {
@@ -177,6 +152,7 @@
   };
 
   // Валидация инпута ввода хэштегов
+  var textHashtags = document.querySelector('.text__hashtags');
   var textHashtagsInputhandler = function (evt) {
     var hashtagsValue = evt.target.value;
     var hashtagsArray = hashtagsValue.split(/\s+/);
@@ -215,6 +191,7 @@
   var allFiltersOnchangeHandler = function (evt) {
     var effect = evt.target.value;
     var className = 'effects__preview--' + effect;
+    currentFilter = effect;
 
     mainImg.className = '';
     mainImg.style.filter = '';
