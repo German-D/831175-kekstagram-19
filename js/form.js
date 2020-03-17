@@ -7,40 +7,6 @@
   var imgUploadOverlay = document.querySelector('.img-upload__overlay');
   var currentFilter;
 
-  // Все варианты эффектов + пропорции эффекта
-  var options = {
-    'effects__preview--chrome': {
-      effect: 'grayscale',
-      proportionValue: function (progress) {
-        return progress / 100;
-      },
-    },
-    'effects__preview--sepia': {
-      effect: 'sepia',
-      proportionValue: function (progress) {
-        return progress / 100;
-      },
-    },
-    'effects__preview--marvin': {
-      effect: 'invert',
-      proportionValue: function (progress) {
-        return progress + '%';
-      },
-    },
-    'effects__preview--phobos': {
-      effect: 'blur',
-      proportionValue: function (progress) {
-        return progress * 3 / 100 + 'px';
-      },
-    },
-    'effects__preview--heat': {
-      effect: 'brightness',
-      proportionValue: function (progress) {
-        return progress * 2 / 100 + 1;
-      },
-    },
-  };
-
   var uploadFileChangeHandler = function () {
     imgUploadOverlay.classList.remove('hidden');
   };
@@ -58,12 +24,11 @@
 
   var documentKeydownHandler = function (evt) {
     if (evt.key === 'Escape') {
-      if (evt.target.classList.contains('text__hashtags')) {
+      if (evt.target.classList.contains('text__hashtags') || evt.target.classList.contains('social__footer-text')) {
         return;
-      } else {
-        imgUploadCancelClickHandler();
-        window.preview.bigPictureCancelClickHandler();
       }
+      imgUploadCancelClickHandler();
+      window.preview.bigPictureCancelClickHandler();
     }
     if (evt.key === 'Enter') {
       window.preview.picturesClickHandler(evt);
@@ -89,6 +54,40 @@
 
   /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
   var effectLevelDepth = document.querySelector('.effect-level__depth');
+
+  // Все варианты эффектов + пропорции эффекта
+  var options = {
+    'chrome': {
+      effect: 'grayscale',
+      proportionValue: function (progress) {
+        return progress / 100;
+      },
+    },
+    'sepia': {
+      effect: 'sepia',
+      proportionValue: function (progress) {
+        return progress / 100;
+      },
+    },
+    'marvin': {
+      effect: 'invert',
+      proportionValue: function (progress) {
+        return progress + '%';
+      },
+    },
+    'phobos': {
+      effect: 'blur',
+      proportionValue: function (progress) {
+        return progress * 3 / 100 + 'px';
+      },
+    },
+    'heat': {
+      effect: 'brightness',
+      proportionValue: function (progress) {
+        return progress * 2 / 100 + 1;
+      },
+    },
+  };
 
   var effectLevelPinMousedownHandler = function (evt) {
     evt.preventDefault();
@@ -118,7 +117,7 @@
       var effectProgress = calculatePinProgress();
 
       // Меняю знаение эффекта в зависимости от Пина
-      var currentOption = options['effects__preview--' + currentFilter];
+      var currentOption = options[currentFilter];
       mainImg.style.filter = currentOption.effect + '(' + currentOption.proportionValue(effectProgress) + ')';
     };
 
@@ -188,6 +187,12 @@
   var mainImg = mainImgWrapper.querySelector('img');
   var effectLine = document.querySelector('.img-upload__effect-level');
 
+  // Обнуляю пин и полосу прогресса
+  var cancelProgressBar = function (lineLength, pinLength) {
+    effectLevelPin.style.left = lineLength - pinLength / 2 + 'px';
+    effectLevelDepth.style.width = lineLength - pinLength / 2 + 'px';
+  };
+
   var allFiltersOnchangeHandler = function (evt) {
     var effect = evt.target.value;
     var className = 'effects__preview--' + effect;
@@ -195,9 +200,7 @@
 
     mainImg.className = '';
     mainImg.style.filter = '';
-    // Обнуляю пин и полосу прогресса
-    effectLevelPin.style.left = effectLevelLine.offsetWidth - effectLevelPin.offsetWidth / 2 + 'px';
-    effectLevelDepth.style.width = effectLevelLine.offsetWidth - effectLevelPin.offsetWidth / 2 + 'px';
+    cancelProgressBar(effectLevelLine.offsetWidth, effectLevelPin.offsetWidth);
 
     // Логика скрытия слайдера
     if (evt.target.id !== 'effect-none') {
