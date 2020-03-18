@@ -50,28 +50,6 @@
   bigPictureCancel.addEventListener('click', bigPictureCancelClickHandler);
 
   /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
-  // Валидация комментария
-  var socialFooterTextInputHandler = function (evt) {
-    var socialFooterTextValue = evt.target.value;
-    if (socialFooterTextValue.length > 140) {
-      socialFooterText.setCustomValidity('Длина комментария не должна привышать 140 символов');
-      return;
-    }
-    socialFooterText.setCustomValidity('');
-  };
-
-  socialFooterText.addEventListener('input', socialFooterTextInputHandler);
-
-  /* ++++++++++ ++++++++++ ++++++++++ ++++++++++ ++++++++++++++++++++ ++++++++++ */
-  // Не закрываю форму по Enter
-  var socialFooterTextKeydownHandler = function (evt) {
-    if (evt.key === 'Escape') {
-      evt.stopPropagation();
-    }
-  };
-
-  socialFooterText.addEventListener('keydown', socialFooterTextKeydownHandler);
-
 
   window.preview = {
     bigPictureCancelClickHandler: bigPictureCancelClickHandler,
