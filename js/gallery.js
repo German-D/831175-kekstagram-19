@@ -26,18 +26,19 @@
   }
 
   var bigPictureTagImg = document.querySelector('.big-picture__img img');
-  var photosArray = window.data.addNewPhoto(window.data.names, window.data.messages, window.data.descriptions, window.data.photos);
+  // var photosArray = window.data.addNewPhoto(window.data.names, window.data.messages, window.data.descriptions, window.data.photos);
   var photoTemplate = document.querySelector('#picture').content;
   var photoList = document.querySelector('.pictures');
   var socialComments = document.querySelector('.social__comments');
 
+  window.load(function (photoArray) {
+    var fragment = document.createDocumentFragment();
+    for (var t = 0; t < photoArray.length; t++) {
+      fragment.appendChild(renderPhoto(photoArray[t], photoTemplate, t));
+    }
 
-  var fragment = document.createDocumentFragment();
-  for (var t = 0; t < photosArray.length; t++) {
-    fragment.appendChild(renderPhoto(photosArray[t], photoTemplate, t));
-  }
-
-  photoList.appendChild(fragment);
+    photoList.appendChild(fragment);
+  });
 
   var firstPhoto = window.data.photos[0];
   bigPictureTagImg.src = firstPhoto.url;
@@ -45,7 +46,7 @@
   commentsCount.textContent = firstPhoto.comments.length;
   socialCaption.textContent = firstPhoto.description;
 
-  // В задании поросят отрисовать cписок комментариев под фотографией
+  // В задании поросят отрисовать список комментариев под фотографией
   // В верстке есть два li. Кол-во комментариев до 10, задаётся в функции addNewComment
   var iterations = Math.min(2, firstPhoto.comments.length);
   var elementLi = socialComments.querySelectorAll('li');
