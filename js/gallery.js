@@ -26,7 +26,6 @@
   }
 
   var bigPictureTagImg = document.querySelector('.big-picture__img img');
-  // var photosArray = window.data.addNewPhoto(window.data.names, window.data.messages, window.data.descriptions, window.data.photos);
   var photoTemplate = document.querySelector('#picture').content;
   var photoList = document.querySelector('.pictures');
   var socialComments = document.querySelector('.social__comments');
@@ -38,22 +37,23 @@
     }
 
     photoList.appendChild(fragment);
+    window.data.photos = photoArray;
+
+    var firstPhoto = window.data.photos[0];
+    bigPictureTagImg.src = firstPhoto.url;
+    likesCount.textContent = firstPhoto.likes;
+    commentsCount.textContent = firstPhoto.comments.length;
+    socialCaption.textContent = firstPhoto.description;
+
+    // В задании поросят отрисовать список комментариев под фотографией
+    // В верстке есть два li. Кол-во комментариев до 10, задаётся в функции addNewComment
+    var iterations = Math.min(2, firstPhoto.comments.length);
+    var elementLi = socialComments.querySelectorAll('li');
+
+    for (var n = 0; n < iterations; n++) {
+      elementLi[n].querySelector('.social__picture').src = firstPhoto.comments[n].avatar;
+      elementLi[n].querySelector('.social__picture').alt = firstPhoto.comments[n].name;
+      elementLi[n].querySelector('.social__text').textContent = firstPhoto.comments[n].message;
+    }
   });
-
-  var firstPhoto = window.data.photos[0];
-  bigPictureTagImg.src = firstPhoto.url;
-  likesCount.textContent = firstPhoto.likes;
-  commentsCount.textContent = firstPhoto.comments.length;
-  socialCaption.textContent = firstPhoto.description;
-
-  // В задании поросят отрисовать список комментариев под фотографией
-  // В верстке есть два li. Кол-во комментариев до 10, задаётся в функции addNewComment
-  var iterations = Math.min(2, firstPhoto.comments.length);
-  var elementLi = socialComments.querySelectorAll('li');
-
-  for (var n = 0; n < iterations; n++) {
-    elementLi[n].querySelector('.social__picture').src = firstPhoto.comments[n].avatar;
-    elementLi[n].querySelector('.social__picture').alt = firstPhoto.comments[n].name;
-    elementLi[n].querySelector('.social__text').textContent = firstPhoto.comments[n].message;
-  }
 })();
